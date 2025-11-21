@@ -13,6 +13,7 @@
     <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"></plugin>
     <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"></plugin>
     <plugin filename="gz-sim-contact-system" name="gz::sim::systems::Contact"></plugin>
+    <plugin filename="gz-sim-pose-publisher-system" name="gz::sim::systems::PosePublisher"></plugin>
 
     <!-- Sensor Plugins-->
     <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"></plugin>

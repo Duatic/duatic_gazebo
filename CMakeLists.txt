@@ -16,6 +16,7 @@ install(DIRECTORY
   launch
   worlds
   models
+  photos
   docker
   DESTINATION share/${PROJECT_NAME}/
 )
