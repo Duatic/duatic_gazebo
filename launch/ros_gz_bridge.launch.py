@@ -42,7 +42,6 @@ def launch_setup(context, *args, **kwargs):
     ros_gz_bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
-        namespace=LaunchConfiguration("namespace"),
         arguments=[
             "--ros-args",
             "-p",
