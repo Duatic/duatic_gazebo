@@ -8,6 +8,7 @@ from launch.actions import (
     IncludeLaunchDescription,
     SetEnvironmentVariable,
     GroupAction,
+    OpaqueFunction,
 )
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -16,18 +17,7 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 
 
-ARGUMENTS = [
-    DeclareLaunchArgument("world", default_value="empty", description="Simulation World"),
-    DeclareLaunchArgument(
-        "headless",
-        default_value="false",
-        choices=["false", "true"],
-        description="Run the simulation headless",
-    ),
-]
-
-
-def generate_launch_description():
+def launch_setup(context, *args, **kwargs):
     # Paths
     pkg_duatic_simulation = get_package_share_directory("duatic_simulation")
     pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
@@ -46,7 +36,12 @@ def generate_launch_description():
     )
 
     # Launch Gazebo headless or with GUI
-    gz_args = [LaunchConfiguration("world"), ".sdf", " -r", " -v 2"]
+    gz_args = [
+        LaunchConfiguration("world"),
+        ".sdf",
+        " -r",
+        " -v " + LaunchConfiguration("log_level").perform(context),
+    ]
 
     gazebo = GroupAction(
         [
@@ -73,8 +68,28 @@ def generate_launch_description():
     )
 
     # Compose launch description
-    ld = LaunchDescription(ARGUMENTS)
-    ld.add_action(gz_resource_path)
-    ld.add_action(gazebo)
-    ld.add_action(clock_bridge)
+    return [gz_resource_path, gazebo, clock_bridge]
+
+
+def generate_launch_description():
+    # Define LaunchDescription variable
+    ld = LaunchDescription(
+        [
+            DeclareLaunchArgument("world", default_value="empty", description="Simulation World"),
+            DeclareLaunchArgument(
+                "headless",
+                default_value="false",
+                choices=["false", "true"],
+                description="Run the simulation headless",
+            ),
+            DeclareLaunchArgument(
+                "log_level",
+                default_value="2",
+                description="Set the Gazebo log level",
+            ),
+        ]
+    )
+
+    # Add nodes to LaunchDescription
+    ld.add_action(OpaqueFunction(function=launch_setup))
     return ld
