@@ -1,4 +1,4 @@
-# Duatic Simulation
+# duatic_gazebo
 [![Humble Build Main](https://github.com/Duatic/duatic_simulation/actions/workflows/build-humble.yml/badge.svg)](https://github.com/Duatic/duatic_simulation/actions/workflows/build-humble.yml)
 [![Jazzy Build Main](https://github.com/Duatic/duatic_simulation/actions/workflows/build-jazzy.yml/badge.svg)](https://github.com/Duatic/duatic_simulation/actions/workflows/build-jazzy.yml)
 [![Kilted Build Main](https://github.com/Duatic/duatic_simulation/actions/workflows/build-kilted.yml/badge.svg)](https://github.com/Duatic/duatic_simulation/actions/workflows/build-kilted.yml)
@@ -7,6 +7,12 @@
 ## Overview
 
 Provides Gazebo simulation worlds, robot spawning, and ROS-Gazebo bridge configuration for Duatic robots. Includes empty world and warehouse environment with AWS RoboMaker assets.
+
+# License
+
+The contents are licensed under the BSD-3-Clause  [license](LICENSE).\
+Images in this repository are to be licensed separately if you want to use them for any other usecase than forking this repository. Please open an issue in order to get in touch with us.
+
 
 ## Usage
 
@@ -130,3 +136,8 @@ ros2 run duatic_gazebo start_sim.py --ros-args -p world:=warehouse -p headless:=
 - Warehouse infrastructure (shelves, walls, ground)
 - Props (buckets, lamps, trash cans, pallet jacks)
 - Clutter objects for realistic environments
+
+
+# Contributing
+
+Please see the [Contributing guide](./CONTRIBUTING.md)
