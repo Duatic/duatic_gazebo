@@ -19,6 +19,7 @@
   <test_depend>ament_lint_common</test_depend>
   <test_depend>launch_ros</test_depend>
   <test_depend>launch_testing_ament_cmake</test_depend>
+  <test_depend>duatic_ros2_testing</test_depend>
 
   <exec_depend>gz_ros2_control</exec_depend>
 

@@ -13,19 +13,23 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” 
 -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
   <!--Simple macro which loads the correct gazebo plugin for the desired system-->
+  <xacro:property name="duatic_gazebo_simulation_guard" default="true"/>
   <xacro:macro name="duatic_gazebo_simulation" params="namespace controllers_yaml_file *remapping:=^">
-    <gazebo>
-        <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-            <parameters>${controllers_yaml_file}</parameters>
-            <ros>
-                <namespace>${namespace}</namespace>
-                <remapping>/robot_description:=robot_description</remapping>
-                <remapping>/tf:=tf</remapping>
-                <remapping>/tf_static:=tf_static</remapping>
-                <remapping>/diagnostics:=diagnostics</remapping>
-                <xacro:insert_block name="remapping" />
-            </ros>
-        </plugin>
-    </gazebo>
+    <xacro:if value="${duatic_gazebo_simulation_guard'}">
+      <xacro:property name="duatic_gazebo_simulation_guard" value="false"/>
+      <gazebo>
+          <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+              <parameters>${controllers_yaml_file}</parameters>
+              <ros>
+                  <namespace>${namespace}</namespace>
+                  <remapping>/robot_description:=robot_description</remapping>
+                  <remapping>/tf:=tf</remapping>
+                  <remapping>/tf_static:=tf_static</remapping>
+                  <remapping>/diagnostics:=diagnostics</remapping>
+                  <xacro:insert_block name="remapping" />
+              </ros>
+          </plugin>
+      </gazebo>
+    </xacro:if>
   </xacro:macro>
 </robot>
