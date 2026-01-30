@@ -3,8 +3,10 @@ import unittest
 
 import rclpy
 from launch import LaunchDescription
-from launch.actions import TimerAction
-from launch_ros.actions import Node
+from launch.actions import IncludeLaunchDescription, TimerAction
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import PathJoinSubstitution
+from launch_ros.substitutions import FindPackageShare
 import launch_testing
 import rosgraph_msgs.msg
 
@@ -16,12 +18,13 @@ ARGUMENTS = [("world", "warehouse"), ("headless", "true")]
 def generate_test_description():
     """Generate a LaunchDescription for the test."""
 
-    simulation = Node(
-        package="duatic_simulation",
-        executable="start_sim.py",
-        name="simulation",
-        output="screen",
-        arguments=ARGUMENTS,
+    simulation = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution(
+                [FindPackageShare("duatic_simulation"), "launch", "gazebo.launch.py"]
+            )
+        ),
+        launch_arguments=ARGUMENTS,
     )
 
     ready = TimerAction(period=0.5, actions=[launch_testing.actions.ReadyToTest()])
