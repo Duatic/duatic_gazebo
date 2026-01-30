@@ -1,6 +1,6 @@
 services:
     simulation:
-      command: bash -c "ros2 launch duatic_simulation gazebo.launch.py world:=$${WORLD} headless:=$${HEADLESS:-false}"
+      command: bash -c "ros2 launch duatic_gazebo gazebo.launch.py world:=$${WORLD} headless:=$${HEADLESS:-false}"
       image: ghcr.io/duatic/dev-workspace/dynaarm-jazzy
       environment:
         - DISPLAY=${DISPLAY}

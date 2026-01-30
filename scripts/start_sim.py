@@ -27,7 +27,7 @@ class SimulationStarter(Node):
         self.start_cmd = (
             f"WORLD={self.world} HEADLESS={self.headless_str} docker compose "
             f"-p sim_{self.world} "
-            "-f " + get_package_share_directory("duatic_simulation") + "/docker/docker-compose.yml "
+            "-f " + get_package_share_directory("duatic_gazebo") + "/docker/docker-compose.yml "
             "up simulation --detach --wait"
         )
 
@@ -39,7 +39,7 @@ class SimulationStarter(Node):
         stop_cmd = (
             f"WORLD={self.world} docker compose "
             f"-p sim_{self.world} "
-            "-f " + get_package_share_directory("duatic_simulation") + "/docker/docker-compose.yml "
+            "-f " + get_package_share_directory("duatic_gazebo") + "/docker/docker-compose.yml "
             "down --timeout 0"
         )
         self.get_logger().info(f"Stopping simulation container: {stop_cmd}")

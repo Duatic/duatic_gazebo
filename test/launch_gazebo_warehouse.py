@@ -20,9 +20,7 @@ def generate_test_description():
 
     simulation = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            PathJoinSubstitution(
-                [FindPackageShare("duatic_simulation"), "launch", "gazebo.launch.py"]
-            )
+            PathJoinSubstitution([FindPackageShare("duatic_gazebo"), "launch", "gazebo.launch.py"])
         ),
         launch_arguments=ARGUMENTS,
     )
