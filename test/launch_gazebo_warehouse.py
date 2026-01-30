@@ -17,7 +17,7 @@ def generate_test_description():
     """Generate a LaunchDescription for the test."""
 
     simulation = Node(
-        package="duatic_simulation",
+        package="duatic_gazebo",
         executable="start_sim.py",
         name="simulation",
         output="screen",

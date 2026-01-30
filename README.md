@@ -20,13 +20,13 @@ The `start_sim` node provides a managed way to start and stop the simulation. It
 
 ```bash
 # Empty world (default)
-ros2 run duatic_simulation start_sim.py
+ros2 run duatic_gazebo start_sim.py
 
 # Warehouse world
-ros2 run duatic_simulation start_sim.py --ros-args -p world:=warehouse
+ros2 run duatic_gazebo start_sim.py --ros-args -p world:=warehouse
 
 # Headless simulation
-ros2 run duatic_simulation start_sim.py --ros-args -p world:=warehouse -p headless:=true
+ros2 run duatic_gazebo start_sim.py --ros-args -p world:=warehouse -p headless:=true
 ```
 
 **Benefits:**
@@ -38,13 +38,13 @@ ros2 run duatic_simulation start_sim.py --ros-args -p world:=warehouse -p headle
 
 ```bash
 # Empty world (default)
-ros2 launch duatic_simulation gazebo.launch.py
+ros2 launch duatic_gazebo gazebo.launch.py
 
 # Warehouse world
-ros2 launch duatic_simulation gazebo.launch.py world:=warehouse
+ros2 launch duatic_gazebo gazebo.launch.py world:=warehouse
 
 # Headless simulation
-ros2 launch duatic_simulation gazebo.launch.py world:=warehouse headless:=true
+ros2 launch duatic_gazebo gazebo.launch.py world:=warehouse headless:=true
 ```
 
 ### Spawn Robot
@@ -53,18 +53,18 @@ Prerequisite: URDF is being published with the topic /{namespace}/robot_descript
 
 ```bash
 # Basic spawn
-ros2 launch duatic_simulation spawn.launch.py namespace:=robot1 x:=0 y:=0 z:=1 yaw:=0
+ros2 launch duatic_gazebo spawn.launch.py namespace:=robot1 x:=0 y:=0 z:=1 yaw:=0
 
 # Multiple robots
-ros2 launch duatic_simulation spawn.launch.py namespace:=alpha x:=0 y:=0 z:=1 yaw:=0 &
-ros2 launch duatic_simulation spawn.launch.py namespace:=beta x:=2 y:=2 z:=1 yaw:=1.57 &
+ros2 launch duatic_gazebo spawn.launch.py namespace:=alpha x:=0 y:=0 z:=1 yaw:=0 &
+ros2 launch duatic_gazebo spawn.launch.py namespace:=beta x:=2 y:=2 z:=1 yaw:=1.57 &
 ```
 
 ### ROS-Gazebo Bridge
 
 ```bash
 # Launch bridge with config file
-ros2 launch duatic_simulation ros_gz_bridge.launch.py \
+ros2 launch duatic_gazebo ros_gz_bridge.launch.py \
   namespace:=robot1 \
   world:=warehouse \
   config_file:=/path/to/bridge_config.yaml
@@ -96,7 +96,7 @@ ROS 2 node that manages the simulation Docker container lifecycle.
 
 **Example:**
 ```bash
-ros2 run duatic_simulation start_sim.py --ros-args -p world:=warehouse -p headless:=false
+ros2 run duatic_gazebo start_sim.py --ros-args -p world:=warehouse -p headless:=false
 ```
 
 ## Parameters

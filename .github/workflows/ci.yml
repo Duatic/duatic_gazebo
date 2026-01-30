@@ -1,4 +1,4 @@
-name: Test duatic_simulation
+name: Test duatic_gazebo
 
 on:
   push:
@@ -21,19 +21,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Build the duatic_simulation package temporarily
+      # Build the duatic_gazebo package temporarily
       - name: Build workspace
         shell: bash
         run: |
           source /opt/ros/jazzy/setup.bash
-          colcon build --packages-select duatic_simulation --event-handlers console_cohesion+
+          colcon build --packages-select duatic_gazebo --event-handlers console_cohesion+
 
-      # Run tests for duatic_simulation
+      # Run tests for duatic_gazebo
       - name: Run tests
         shell: bash
         run: |
           source install/setup.bash
-          colcon test --packages-select duatic_simulation --event-handlers console_direct+
+          colcon test --packages-select duatic_gazebo --event-handlers console_direct+
           colcon test-result --verbose
 
       # Upload test logs (optional)
