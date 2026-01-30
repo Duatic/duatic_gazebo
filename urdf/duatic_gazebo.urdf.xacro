@@ -13,10 +13,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” 
 -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
   <!--Simple macro which loads the correct gazebo plugin for the desired system-->
-  <xacro:macro name="duatic_gazebo_simulation" params="namespace *remapping:=^">
+  <xacro:macro name="duatic_gazebo_simulation" params="namespace controllers_yaml_file *remapping:=^">
     <gazebo>
         <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-            <parameters>$(find duatic_control)/config/controller_manager.yaml</parameters>
+            <parameters>${controllers_yaml_file}</parameters>
             <ros>
                 <namespace>${namespace}</namespace>
                 <remapping>/robot_description:=robot_description</remapping>

@@ -1,5 +1,1 @@
 repositories:
-  duatic_control:
-    type: git
-    url: https://github.com/Duatic/duatic_control.git
-    version: main
