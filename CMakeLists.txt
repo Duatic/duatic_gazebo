@@ -17,6 +17,7 @@ install(DIRECTORY
   worlds
   models
   docker
+  urdf
   DESTINATION share/${PROJECT_NAME}/
 )
 
