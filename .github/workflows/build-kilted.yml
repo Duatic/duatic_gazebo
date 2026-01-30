@@ -14,7 +14,6 @@ on:
 jobs:
   kilted_binary_main:
     uses: ./.github/workflows/reusable_ici.yml
-    timeout-minutes: 60
     with:
       ros_distro: kilted
       ros_repo: main
