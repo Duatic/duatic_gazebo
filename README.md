@@ -1,14 +1,12 @@
 # Duatic Simulation
-
-[![ROS2](https://img.shields.io/badge/ROS2-Jazzy-blue.svg)](https://docs.ros.org/en/jazzy/)
-[![Gazebo](https://img.shields.io/badge/Gazebo-Harmonic-blue.svg)](https://gazebosim.org/)
-[![License](https://img.shields.io/badge/License-Duatic-blue.svg)](LICENSE)
-
-Gazebo simulation environment for Duatic robotic platforms.
+[![Humble Build Main](https://github.com/Duatic/duatic_simulation/actions/workflows/build-humble.yml/badge.svg)](https://github.com/Duatic/duatic_simulation/actions/workflows/build-humble.yml)
+[![Jazzy Build Main](https://github.com/Duatic/duatic_simulation/actions/workflows/build-jazzy.yml/badge.svg)](https://github.com/Duatic/duatic_simulation/actions/workflows/build-jazzy.yml)
+[![Kilted Build Main](https://github.com/Duatic/duatic_simulation/actions/workflows/build-kilted.yml/badge.svg)](https://github.com/Duatic/duatic_simulation/actions/workflows/build-kilted.yml)
+[![Rolling Build Main](https://github.com/Duatic/duatic_simulation/actions/workflows/build-rolling.yml/badge.svg)](https://github.com/Duatic/duatic_simulation/actions/workflows/build-rolling.yml)
 
 ## Overview
 
-Provides Gazebo Harmonic simulation worlds, robot spawning, and ROS-Gazebo bridge configuration for Duatic robots. Includes empty world and warehouse environment with AWS RoboMaker assets.
+Provides Gazebo simulation worlds, robot spawning, and ROS-Gazebo bridge configuration for Duatic robots. Includes empty world and warehouse environment with AWS RoboMaker assets.
 
 ## Usage
 
