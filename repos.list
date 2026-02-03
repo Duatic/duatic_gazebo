@@ -1,5 +1,5 @@
 repositories:
-  duatic_ros2_testing:
+  duatic_helpers:
     type: git
-    url: https://github.com/Duatic/duatic_ros2_testing.git
+    url: https://github.com/Duatic/duatic_helpers.git
     version: main

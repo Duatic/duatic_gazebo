@@ -10,7 +10,7 @@ from launch_ros.substitutions import FindPackageShare
 import launch_testing
 import rosgraph_msgs.msg
 
-from duatic_ros2_testing.tests import wait_for_node, wait_for_message
+from duatic_helpers.test_helper import wait_for_message, wait_for_node
 
 ARGUMENTS = [("world", "warehouse"), ("headless", "true")]
 
