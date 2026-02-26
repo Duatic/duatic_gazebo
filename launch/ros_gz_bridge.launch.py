@@ -5,6 +5,7 @@ from launch_ros.actions import Node
 
 import tempfile
 import xml.etree.ElementTree as ET
+import yaml
 
 ARGUMENTS = [
     DeclareLaunchArgument(
@@ -21,32 +22,18 @@ ARGUMENTS = [
 
 
 def extract_robot_name_from_urdf(urdf_file_path):
-    """
-    Extract robot name from URDF file by parsing the <robot name="..."> tag.
-    Handles both .urdf and .xacro files.
-
-    Args:
-        urdf_file_path: Path to the URDF or URDF.xacro file
-
-    Returns:
-        Robot name as string, or None if not found or file doesn't exist
-    """
+    """Extract robot name from URDF file by parsing the <robot name="..."> tag."""
     try:
-        # Check if it's a xacro file
         if urdf_file_path.endswith(".xacro"):
             import xacro
 
-            # Process xacro to get the URDF XML (returns DOM Document)
             doc = xacro.parse(open(urdf_file_path))
             xacro.process_doc(doc)
-            # DOM API uses documentElement instead of getroot()
             root = doc.documentElement
         else:
-            # Parse as regular URDF
             tree = ET.parse(urdf_file_path)
             root = tree.getroot()
 
-        # The root element should be <robot name="...">
         if root.tagName == "robot" and root.hasAttribute("name"):
             return root.getAttribute("name")
 
@@ -56,78 +43,117 @@ def extract_robot_name_from_urdf(urdf_file_path):
         return None
 
 
-def generate_bridge_params(robot_model_name, world, config_file):
-    """
-    Generate Gazebo bridge parameters by replacing placeholders in config file.
-
-    Args:
-        robot_model_name: The model name in Gazebo (e.g., 'alpha', 'torso', 'platform').
-                          If empty, uses 'default_robot' as fallback since Gazebo requires a model name.
-        world: The Gazebo world name
-        config_file: Path to the YAML config template with placeholders
-    """
-    # Read the template file
+def split_bridge_params(robot_model_name, world, config_file):
+    """Reads the config file, replaces placeholders, and splits the configuration."""
     with open(config_file) as f:
         content = f.read()
 
-    # Replace world namespace
+    # Replace placeholders
     content = content.replace("<world_namespace>", world)
-
-    # Replace robot namespace - use fallback if empty since Gazebo ALWAYS requires /model/<name>
     model_name = robot_model_name if robot_model_name else "default_robot"
     content = content.replace("<robot_namespace>", model_name)
 
-    # Write to a temp file
-    tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".yaml")
-    tmp_file.write(content.encode())
-    tmp_file.close()
-    return tmp_file.name
+    # Parse the YAML configuration
+    config_data = yaml.safe_load(content)
+
+    standard_configs = []
+    image_topics = []
+    image_remappings = []
+
+    # Common image_transport suffixes that get automatically appended
+    image_transport_suffixes = [
+        "",  # The base raw topic
+        "/compressed",
+        "/compressedDepth",
+        "/theora",
+        "/zstd",
+    ]
+
+    if config_data:
+        for entry in config_data:
+            if entry.get("ros_type_name") == "sensor_msgs/msg/ImageCompressed":
+                gz_topic = entry.get("gz_topic_name", "").strip()
+                ros_topic = entry.get("ros_topic_name", "").strip()
+
+                # Force absolute path
+                if not ros_topic.startswith("/"):
+                    ros_topic = "/" + ros_topic
+
+                image_topics.append(gz_topic)
+
+                # Generate remapping rules for the base topic AND all compression plugins
+                if gz_topic != ros_topic:
+                    for suffix in image_transport_suffixes:
+                        gz_subtopic = f"{gz_topic}{suffix}"
+                        ros_subtopic = f"{ros_topic}{suffix}"
+                        image_remappings.append((gz_subtopic, ros_subtopic))
+            else:
+                standard_configs.append(entry)
+
+    standard_yaml_path = None
+    if standard_configs:
+        tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".yaml", mode="w")
+        yaml.dump(standard_configs, tmp_file)
+        tmp_file.close()
+        standard_yaml_path = tmp_file.name
+
+    return standard_yaml_path, image_topics, image_remappings
 
 
-# This function is called at launch-time with the LaunchContext
 def launch_setup(context, *args, **kwargs):
     namespace = LaunchConfiguration("namespace").perform(context)
     world = LaunchConfiguration("world").perform(context)
     config_file = LaunchConfiguration("config_file").perform(context)
     urdf_file = LaunchConfiguration("urdf_file").perform(context)
 
-    # Determine robot model name with 3-tier priority:
-    # 1. First priority: namespace (if set and not default "empty_namespace")
-    # 2. Second priority: extract from URDF file
+    # Determine robot model name
     robot_name = None
-
-    if namespace and namespace != "empty_namespace" and namespace != "":
+    if namespace and namespace not in ["empty_namespace", ""]:
         robot_name = namespace
     elif urdf_file:
         robot_name = extract_robot_name_from_urdf(urdf_file)
-        if robot_name:
-            print(f"[ros_gz_bridge] Extracted robot name from URDF: {robot_name}")
 
-    # Final fallback if everything failed
     if not robot_name:
         robot_name = "default_robot"
-        print(f"[ros_gz_bridge] Warning: Using fallback robot name: {robot_name}")
 
-    params_file = generate_bridge_params(robot_name, world, config_file)
-
-    ros_gz_bridge = Node(
-        package="ros_gz_bridge",
-        executable="parameter_bridge",
-        arguments=[
-            "--ros-args",
-            "-p",
-            f"config_file:={params_file}",
-        ],
-        output="screen",
+    # Process and split the parameters
+    params_file, image_topics, image_remappings = split_bridge_params(
+        robot_name, world, config_file
     )
 
-    return [ros_gz_bridge]
+    nodes_to_launch = []
+
+    # 1. Launch Standard Parameter Bridge
+    if params_file:
+        nodes_to_launch.append(
+            Node(
+                package="ros_gz_bridge",
+                executable="parameter_bridge",
+                arguments=[
+                    "--ros-args",
+                    "-p",
+                    f"config_file:={params_file}",
+                ],
+                output="screen",
+            )
+        )
+
+    # 2. Launch Image Bridge
+    if image_topics:
+        nodes_to_launch.append(
+            Node(
+                package="ros_gz_image",
+                executable="image_bridge",
+                arguments=image_topics,
+                remappings=image_remappings,
+                output="screen",
+            )
+        )
+
+    return nodes_to_launch
 
 
 def generate_launch_description():
     ld = LaunchDescription(ARGUMENTS)
-
-    # Use OpaqueFunction to delay evaluation until runtime
     ld.add_action(OpaqueFunction(function=launch_setup))
-
     return ld
