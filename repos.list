@@ -2,4 +2,4 @@ repositories:
   duatic_helpers:
     type: git
     url: https://github.com/Duatic/duatic_helpers.git
-    version: refactor/remove_dautic_helpers_package
+    version: main
