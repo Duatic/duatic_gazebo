@@ -96,15 +96,10 @@ def split_bridge_params(robot_model_name, world, config_file):
         for entry in config_data:
             if entry.get("ros_type_name") == "sensor_msgs/msg/ImageCompressed":
                 gz_topic = entry.get("gz_topic_name", "").strip()
-                ros_topic = entry.get("ros_topic_name", "").strip()
-
-                # Force absolute path
-                if not ros_topic.startswith("/"):
-                    ros_topic = "/" + ros_topic
-
                 image_topics.append(gz_topic)
 
                 # Generate remapping rules for the base topic AND all compression plugins
+                ros_topic = entry.get("ros_topic_name", "").strip()
                 if gz_topic != ros_topic:
                     for suffix in image_transport_suffixes:
                         gz_subtopic = f"{gz_topic}{suffix}"
