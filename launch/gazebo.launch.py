@@ -43,6 +43,7 @@ from launch_ros.actions import Node
 def launch_setup(context, *args, **kwargs):
     # Packages Directories
     pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
+    pkg_duatic_gazebo = get_package_share_directory("duatic_gazebo")
 
     gz_sim_launch = PathJoinSubstitution([pkg_ros_gz_sim, "launch", "gz_sim.launch.py"])
 
@@ -50,9 +51,11 @@ def launch_setup(context, *args, **kwargs):
     gz_resource_path = SetEnvironmentVariable(
         name="GZ_SIM_RESOURCE_PATH",
         value=[
-            LaunchConfiguration("gz_worlds_path"),
+            PathJoinSubstitution([pkg_duatic_gazebo, "worlds"]),# world models within this repo
             ":",
-            LaunchConfiguration("gz_models_path"),
+            PathJoinSubstitution([pkg_duatic_gazebo, "models"]),# object models within this repo
+            ":",
+            LaunchConfiguration("gz_models_path"),# additional search paths provided by argument
         ],
     )
 
@@ -97,14 +100,9 @@ def generate_launch_description():
             description="Run the simulation headless",
         ),
         DeclareLaunchArgument(
-            "gz_worlds_path",
-            default_value=os.path.join(get_package_share_directory("duatic_gazebo"), "worlds"),
-            description="Path to the Gazebo worlds directory",
-        ),
-        DeclareLaunchArgument(
             "gz_models_path",
-            default_value=os.path.join(get_package_share_directory("duatic_gazebo"), "models"),
-            description="Path to the Gazebo models directory",
+            default_value="",
+            description="A ':'-separated list of Gazebo resource search paths",
         ),
         DeclareLaunchArgument(
             "log_level",
