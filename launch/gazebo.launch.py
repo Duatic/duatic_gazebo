@@ -51,11 +51,11 @@ def launch_setup(context, *args, **kwargs):
     gz_resource_path = SetEnvironmentVariable(
         name="GZ_SIM_RESOURCE_PATH",
         value=[
-            PathJoinSubstitution([pkg_duatic_gazebo, "worlds"]),# world models within this repo
+            PathJoinSubstitution([pkg_duatic_gazebo, "worlds"]),  # world models within this repo
             ":",
-            PathJoinSubstitution([pkg_duatic_gazebo, "models"]),# object models within this repo
+            PathJoinSubstitution([pkg_duatic_gazebo, "models"]),  # object models within this repo
             ":",
-            LaunchConfiguration("gz_models_path"),# additional search paths provided by argument
+            LaunchConfiguration("gz_models_path"),  # additional search paths provided by argument
         ],
     )
 
