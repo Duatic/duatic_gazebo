@@ -110,6 +110,7 @@ ros2 run duatic_gazebo start_sim.py --ros-args -p world:=warehouse -p headless:=
 |-----------|---------|-------------|
 | `world` | `"empty"` | World name (empty, warehouse) |
 | `headless` | `false` | Run without GUI |
+| `gz_models_path` | `""` | A ':'-separated list of Gazebo resource search paths |
 
 ### spawn.launch.py
 | Parameter | Default | Description |
