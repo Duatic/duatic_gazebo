@@ -1,8 +1,9 @@
 # duatic_gazebo
-[![Humble Build Main](https://github.com/Duatic/duatic_gazebo/actions/workflows/build-humble.yml/badge.svg?branch=main)](https://github.com/Duatic/duatic_gazebo/actions/workflows/build-humble.yml)
-[![Jazzy Build Main](https://github.com/Duatic/duatic_gazebo/actions/workflows/build-jazzy.yml/badge.svg?branch=main)](https://github.com/Duatic/duatic_simulation/actions/workflows/build-jazzy.yml)
-[![Kilted Build Main](https://github.com/Duatic/duatic_gazebo/actions/workflows/build-kilted.yml/badge.svg?branch=main)](https://github.com/Duatic/duatic_simulation/actions/workflows/build-kilted.yml)
-[![Rolling Build Main](https://github.com/Duatic/duatic_gazebo/actions/workflows/build-rolling.yml/badge.svg?branch=main)](https://github.com/Duatic/duatic_simulation/actions/workflows/build-rolling.yml)
+[![Humble](https://github.com/Duatic/duatic_gazebo/actions/workflows/build-humble.yml/badge.svg?branch=main)](https://github.com/Duatic/duatic_gazebo/actions/workflows/build-humble.yml)
+[![Jazzy](https://github.com/Duatic/duatic_gazebo/actions/workflows/build-jazzy.yml/badge.svg?branch=main)](https://github.com/Duatic/duatic_gazebo/actions/workflows/build-jazzy.yml)
+[![Kilted](https://github.com/Duatic/duatic_gazebo/actions/workflows/build-kilted.yml/badge.svg?branch=main)](https://github.com/Duatic/duatic_gazebo/actions/workflows/build-kilted.yml)
+[![Lyrical](https://github.com/Duatic/duatic_gazebo/actions/workflows/build-lyrical.yml/badge.svg?branch=main)](https://github.com/Duatic/duatic_gazebo/actions/workflows/build-lyrical.yml)
+[![Rolling](https://github.com/Duatic/duatic_gazebo/actions/workflows/build-rolling.yml/badge.svg?branch=main)](https://github.com/Duatic/duatic_gazebo/actions/workflows/build-rolling.yml)
 
 ## Overview
 
