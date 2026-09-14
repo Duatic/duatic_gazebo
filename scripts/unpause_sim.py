@@ -67,9 +67,14 @@ class UnpauseSim(Node):
         cm = str(self.get_parameter("controller_manager").value).rstrip("/")
         client = self.create_client(ListHardwareComponents, f"{cm}/list_hardware_components")
 
+        service = client.srv_name
         deadline = time.monotonic() + timeout
+        next_notice = time.monotonic() + 5.0
         while time.monotonic() < deadline:
             if not client.service_is_ready():
+                if time.monotonic() >= next_notice:
+                    self.get_logger().warn(f"Still waiting for {service}")
+                    next_notice = time.monotonic() + 5.0
                 client.wait_for_service(timeout_sec=poll_interval)
                 continue
 
@@ -82,6 +87,9 @@ class UnpauseSim(Node):
                 if not missing:
                     self.get_logger().info("All required hardware components active")
                     return True
+                if time.monotonic() >= next_notice:
+                    self.get_logger().warn(f"Not active yet: {sorted(missing)}")
+                    next_notice = time.monotonic() + 5.0
             time.sleep(poll_interval)
         return False
 

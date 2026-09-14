@@ -93,12 +93,15 @@ def launch_setup(context, *args, **kwargs):
         package="duatic_gazebo",
         executable="unpause_sim.py",
         name="unpause_sim",
+        namespace=LaunchConfiguration("namespace"),
         output="screen",
         parameters=[
             {
                 "world": LaunchConfiguration("world"),
                 "wait_hardware": LaunchConfiguration("wait_hardware"),
                 "timeout": 60.0,
+                # Must keep running while the paused world holds the clock still.
+                "use_sim_time": False,
             }
         ],
     )
@@ -125,6 +128,14 @@ def generate_launch_description():
             "log_level",
             default_value="1",
             description="Gazebo log level(debug:4, info:3, warn:2, error:1, fatal:0)",
+        ),
+        DeclareLaunchArgument(
+            "namespace",
+            default_value="",
+            description=(
+                "Namespace the robot's controller_manager lives in. unpause_sim "
+                "looks for its services there."
+            ),
         ),
         DeclareLaunchArgument(
             "wait_hardware",
