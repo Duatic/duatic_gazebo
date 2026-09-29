@@ -21,6 +21,8 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import os
+
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
@@ -45,6 +47,13 @@ def launch_setup(context, *args, **kwargs):
 
     gz_sim_launch = PathJoinSubstitution([pkg_ros_gz_sim, "launch", "gz_sim.launch.py"])
 
+    # Share dir of every sourced package
+    ament_share_dirs = [
+        os.path.join(prefix, "share")
+        for prefix in os.environ.get("AMENT_PREFIX_PATH", "").split(":")
+        if prefix
+    ]
+
     # Set Gazebo resource path
     gz_resource_path = SetEnvironmentVariable(
         name="GZ_SIM_RESOURCE_PATH",
@@ -53,7 +62,7 @@ def launch_setup(context, *args, **kwargs):
             ":",
             PathJoinSubstitution([pkg_duatic_gazebo, "models"]),  # object models within this repo
             ":",
-            LaunchConfiguration("gz_models_path"),  # additional search paths provided by argument
+            ":".join(ament_share_dirs),
         ],
     )
 
@@ -118,11 +127,6 @@ def generate_launch_description():
             default_value="false",
             choices=["false", "true"],
             description="Run the simulation headless",
-        ),
-        DeclareLaunchArgument(
-            "gz_models_path",
-            default_value="",
-            description="A ':'-separated list of Gazebo resource search paths",
         ),
         DeclareLaunchArgument(
             "log_level",
