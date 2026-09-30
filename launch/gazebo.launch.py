@@ -31,7 +31,7 @@ from launch.actions import (
     GroupAction,
     IncludeLaunchDescription,
     OpaqueFunction,
-    SetEnvironmentVariable,
+    AppendEnvironmentVariable,
 )
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -42,28 +42,34 @@ from launch_ros.actions import Node
 
 def launch_setup(context, *args, **kwargs):
     # Packages Directories
+    gz_extra_paths = LaunchConfiguration("gz_models_path").perform(context)
     pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
-    pkg_duatic_gazebo = get_package_share_directory("duatic_gazebo")
-
     gz_sim_launch = PathJoinSubstitution([pkg_ros_gz_sim, "launch", "gz_sim.launch.py"])
 
-    # Share dir of every sourced package
-    ament_share_dirs = [
-        os.path.join(prefix, "share")
-        for prefix in os.environ.get("AMENT_PREFIX_PATH", "").split(":")
-        if prefix
-    ]
+    # Expand Gazebo resource path
+    gz_ament_prefix_paths = []
+    for ament_path in os.environ.get("AMENT_PREFIX_PATH", "").split(":"):
+        # We could add all of these, but for readability, only
+        #   add the existing ones and do not clutter the path
+        pkg_name = os.path.basename(ament_path)
 
-    # Set Gazebo resource path
-    gz_resource_path = SetEnvironmentVariable(
+        pkg_share_dir = os.path.join(ament_path, "share")
+        if os.path.isdir(pkg_share_dir):
+            gz_ament_prefix_paths.append(pkg_share_dir)
+        else:
+            continue
+
+        worlds_path = os.path.join(pkg_share_dir, pkg_name, "worlds")
+        if os.path.isdir(worlds_path):
+            gz_ament_prefix_paths.append(worlds_path)
+
+        models_path = os.path.join(pkg_share_dir, pkg_name, "models")
+        if os.path.isdir(models_path):
+            gz_ament_prefix_paths.append(models_path)
+
+    gz_resource_path = AppendEnvironmentVariable(
         name="GZ_SIM_RESOURCE_PATH",
-        value=[
-            PathJoinSubstitution([pkg_duatic_gazebo, "worlds"]),  # world models within this repo
-            ":",
-            PathJoinSubstitution([pkg_duatic_gazebo, "models"]),  # object models within this repo
-            ":",
-            ":".join(ament_share_dirs),
-        ],
+        value=gz_extra_paths + ":" + ":".join(gz_ament_prefix_paths),
     )
 
     # Launch Gazebo headless or with GUI. The world starts PAUSED (no -r):
@@ -127,6 +133,11 @@ def generate_launch_description():
             default_value="false",
             choices=["false", "true"],
             description="Run the simulation headless",
+        ),
+        DeclareLaunchArgument(
+            "gz_models_path",
+            default_value="",
+            description="A ':'-separated list of Gazebo resource search paths",
         ),
         DeclareLaunchArgument(
             "log_level",
