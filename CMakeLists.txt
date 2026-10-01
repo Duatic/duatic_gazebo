@@ -7,6 +7,7 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(gz_transport_vendor REQUIRED)
 find_package(gz-transport REQUIRED)
@@ -23,6 +24,9 @@ target_link_libraries(sim_scene_node
 )
 
 install(TARGETS sim_scene_node DESTINATION lib/${PROJECT_NAME})
+
+# Install the python module "duatic_gazebo"
+ament_python_install_package(${PROJECT_NAME})
 
 # Install  directories
 install(DIRECTORY
@@ -51,6 +55,10 @@ if(BUILD_TESTING)
     add_launch_test("${path}" RUNNER "${RUNNER}" ${ARGN})
   endfunction()
   add_ros_isolated_launch_test(test/launch_gazebo_warehouse.py)
+
+  find_package(ament_cmake_pytest REQUIRED)
+  ament_add_pytest_test(test_gz_resource_path test/test_gz_resource_path.py
+    APPEND_ENV PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
 ament_package()
