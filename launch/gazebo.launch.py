@@ -23,7 +23,7 @@
 
 import os
 
-from ament_index_python.packages import get_package_share_directory
+from ament_index_python.packages import get_package_share_directory, get_packages_with_prefixes
 
 from launch import LaunchDescription
 from launch.actions import (
@@ -40,6 +40,14 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 
 
+def join_env_paths(*paths: str) -> str:
+    """
+    Join a list of env paths into an os.pathsep-separated string, filtering
+    out empty strings and stripping leading/trailing os.pathsep characters.
+    """
+    return os.pathsep.join(filter(None, [path.strip(os.pathsep) for path in paths]))
+
+
 def launch_setup(context, *args, **kwargs):
     # Packages Directories
     gz_extra_paths = LaunchConfiguration("gz_models_path").perform(context)
@@ -47,29 +55,25 @@ def launch_setup(context, *args, **kwargs):
     gz_sim_launch = PathJoinSubstitution([pkg_ros_gz_sim, "launch", "gz_sim.launch.py"])
 
     # Expand Gazebo resource path
-    gz_ament_prefix_paths = []
-    for ament_path in os.environ.get("AMENT_PREFIX_PATH", "").split(":"):
+    gz_pkg_paths = []
+    for pkg_name, pkg_prefix in get_packages_with_prefixes().items():
         # We could add all of these, but for readability, only
         #   add the existing ones and do not clutter the path
-        pkg_name = os.path.basename(ament_path)
+        pkg_share_dir = os.path.join(pkg_prefix, "share")
+        if not os.path.isdir(pkg_share_dir):
+            continue  # micro-optimization
+        if pkg_share_dir not in gz_pkg_paths:
+            gz_pkg_paths.append(pkg_share_dir)
 
-        pkg_share_dir = os.path.join(ament_path, "share")
-        if os.path.isdir(pkg_share_dir):
-            gz_ament_prefix_paths.append(pkg_share_dir)
-        else:
-            continue
-
-        worlds_path = os.path.join(pkg_share_dir, pkg_name, "worlds")
-        if os.path.isdir(worlds_path):
-            gz_ament_prefix_paths.append(worlds_path)
-
-        models_path = os.path.join(pkg_share_dir, pkg_name, "models")
-        if os.path.isdir(models_path):
-            gz_ament_prefix_paths.append(models_path)
+        for subdir in ["worlds", "models"]:
+            subdir_path = os.path.join(pkg_share_dir, pkg_name, subdir)
+            if os.path.isdir(subdir_path) and subdir_path not in gz_pkg_paths:
+                gz_pkg_paths.append(subdir_path)
 
     gz_resource_path = AppendEnvironmentVariable(
         name="GZ_SIM_RESOURCE_PATH",
-        value=gz_extra_paths + ":" + ":".join(gz_ament_prefix_paths),
+        value=join_env_paths(gz_extra_paths, os.pathsep.join(gz_pkg_paths)),
+        prepend=True,
     )
 
     # Launch Gazebo headless or with GUI. The world starts PAUSED (no -r):
