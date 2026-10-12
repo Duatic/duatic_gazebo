@@ -1,0 +1,200 @@
+<?xml version="1.0"?>
+<!--
+Copyright 2026 Duatic AG
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<sdf version="1.11">
+  <world name="klt_and_bag_lifting">
+
+    <physics name="2ms" type="Bullet">
+      <max_step_size>0.002</max_step_size>
+      <real_time_factor>2.0</real_time_factor>
+      <real_time_update_rate>500</real_time_update_rate>
+    </physics>
+
+    <!-- Plugins-->
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"></plugin>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"></plugin>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"></plugin>
+    <plugin filename="gz-sim-contact-system" name="gz::sim::systems::Contact"></plugin>
+
+    <!-- Sensor Plugins-->
+    <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"></plugin>
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+
+    <!-- A warehouse environment -->
+    <include>
+      <uri>model://aws_robomaker_warehouse_v2</uri>
+      <pose>0 0 0 0 0 0</pose>
+    </include>
+
+    <model name="pallet_a">
+      <static>true</static>
+      <pose>-0.5 -7.0 0.0 3.14 0.0 1.57</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry><mesh><uri>model://pallet/pallet.glb</uri><scale>0.001 0.001 0.0025</scale></mesh></geometry>
+        </visual>
+        <collision name="collision">
+          <geometry><mesh><uri>model://pallet/pallet.glb</uri><scale>0.001 0.001 0.0025</scale></mesh></geometry>
+        </collision>
+      </link>
+    </model>
+
+    <model name="pallet_b">
+      <static>true</static>
+      <pose>-1.75 -4.0 0.0 3.14 0.0 2.57</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry><mesh><uri>model://pallet/pallet.glb</uri><scale>0.001 0.001 0.0025</scale></mesh></geometry>
+        </visual>
+        <collision name="collision">
+          <geometry><mesh><uri>model://pallet/pallet.glb</uri><scale>0.001 0.001 0.0025</scale></mesh></geometry>
+        </collision>
+      </link>
+    </model>
+
+    <model name="pallet_c">
+      <static>true</static>
+      <pose>-0.75 -1.0 0.0 3.14 0.0 1.0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry><mesh><uri>model://pallet/pallet.glb</uri><scale>0.001 0.001 0.0025</scale></mesh></geometry>
+        </visual>
+        <collision name="collision">
+          <geometry><mesh><uri>model://pallet/pallet.glb</uri><scale>0.001 0.001 0.0025</scale></mesh></geometry>
+        </collision>
+      </link>
+    </model>
+
+    <model name="pallet_d">
+      <static>true</static>
+      <pose>-2.0 2.0 0.0 3.14 0.0 3.14</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry><mesh><uri>model://pallet/pallet.glb</uri><scale>0.001 0.001 0.0025</scale></mesh></geometry>
+        </visual>
+        <collision name="collision">
+          <geometry><mesh><uri>model://pallet/pallet.glb</uri><scale>0.001 0.001 0.0025</scale></mesh></geometry>
+        </collision>
+      </link>
+    </model>
+
+    <model name="pallet_e">
+      <static>true</static>
+      <pose>-0.75 5.0 0.0 3.14 0.0 1.57</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry><mesh><uri>model://pallet/pallet.glb</uri><scale>0.001 0.001 0.0025</scale></mesh></geometry>
+        </visual>
+        <collision name="collision">
+          <geometry><mesh><uri>model://pallet/pallet.glb</uri><scale>0.001 0.001 0.0025</scale></mesh></geometry>
+        </collision>
+      </link>
+    </model>
+
+    <model name="shelf_a">
+      <static>true</static>
+      <pose>3.0 9.75 0 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry><mesh><uri>model://shelf/klt_shelf.obj</uri><scale>0.001 0.001 0.001</scale></mesh></geometry>
+        </visual>
+        <collision name="collision">
+          <geometry><mesh><uri>model://shelf/klt_shelf.obj</uri><scale>0.001 0.001 0.001</scale></mesh></geometry>
+        </collision>
+      </link>
+    </model>
+
+    <model name="shelf_b">
+      <static>true</static>
+      <pose>6.25 7.5 0 0 0 1.57</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry><mesh><uri>model://shelf/klt_shelf.obj</uri><scale>0.001 0.001 0.001</scale></mesh></geometry>
+        </visual>
+        <collision name="collision">
+          <geometry><mesh><uri>model://shelf/klt_shelf.obj</uri><scale>0.001 0.001 0.001</scale></mesh></geometry>
+        </collision>
+      </link>
+    </model>
+
+    <model name="shelf_c">
+      <static>true</static>
+      <pose>6.25 5.5 0 0 0 1.57</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry><mesh><uri>model://shelf/klt_shelf.obj</uri><scale>0.001 0.001 0.001</scale></mesh></geometry>
+        </visual>
+        <collision name="collision">
+          <geometry><mesh><uri>model://shelf/klt_shelf.obj</uri><scale>0.001 0.001 0.001</scale></mesh></geometry>
+        </collision>
+      </link>
+    </model>
+
+    <model name="shelf_d">
+      <static>true</static>
+      <pose>6.25 3.5 0 0 0 1.57</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry><mesh><uri>model://shelf/klt_shelf.obj</uri><scale>0.001 0.001 0.001</scale></mesh></geometry>
+        </visual>
+        <collision name="collision">
+          <geometry><mesh><uri>model://shelf/klt_shelf.obj</uri><scale>0.001 0.001 0.001</scale></mesh></geometry>
+        </collision>
+      </link>
+    </model>
+
+    <model name="klt_box_a">
+      <static>false</static>
+      <pose>-0.65 5.0 0.4 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry><mesh><uri>model://klt_box/klt_box_middle_lowpoly.obj</uri></mesh></geometry>
+        </visual>
+        <collision name="collision">
+          <geometry><mesh><uri>model://klt_box/klt_box_middle_lowpoly.obj</uri></mesh></geometry>
+        </collision>
+      </link>
+    </model>
+
+    <model name="klt_box_b">
+      <static>false</static>
+      <pose>3.0 9.45 0.34 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry><mesh><uri>model://klt_box/klt_box_middle_lowpoly.obj</uri></mesh></geometry>
+        </visual>
+        <collision name="collision">
+          <geometry><mesh><uri>model://klt_box/klt_box_middle_lowpoly.obj</uri></mesh></geometry>
+        </collision>
+      </link>
+    </model>
+
+    <!-- Lighting -->
+    <light name="Warehouse_CeilingLight_003" type="point">
+      <pose>0 0 8.5 0 0 0</pose>
+      <diffuse>0.5 0.5 0.5 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>80</range>
+        <constant>0.3</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>1</cast_shadows>
+      <direction>0.1 0.1 -1</direction>
+    </light>
+  </world>
+</sdf>
