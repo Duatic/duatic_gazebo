@@ -161,10 +161,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” 
       <pose>-0.65 5.0 0.4 0 0 0</pose>
       <link name="link">
         <visual name="visual">
-          <geometry><mesh><uri>model://klt_box/klt_box_middle_lowpoly.obj</uri></mesh></geometry>
+          <geometry><mesh><uri>model://klt_box/klt_box_middle.obj</uri></mesh></geometry>
         </visual>
         <collision name="collision">
-          <geometry><mesh><uri>model://klt_box/klt_box_middle_lowpoly.obj</uri></mesh></geometry>
+          <geometry><mesh><uri>model://klt_box/klt_box_middle.obj</uri></mesh></geometry>
         </collision>
       </link>
     </model>
@@ -174,10 +174,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” 
       <pose>3.0 9.45 0.34 0 0 0</pose>
       <link name="link">
         <visual name="visual">
-          <geometry><mesh><uri>model://klt_box/klt_box_middle_lowpoly.obj</uri></mesh></geometry>
+          <geometry><mesh><uri>model://klt_box/klt_box_middle.obj</uri></mesh></geometry>
         </visual>
         <collision name="collision">
-          <geometry><mesh><uri>model://klt_box/klt_box_middle_lowpoly.obj</uri></mesh></geometry>
+          <geometry><mesh><uri>model://klt_box/klt_box_middle.obj</uri></mesh></geometry>
         </collision>
       </link>
     </model>
