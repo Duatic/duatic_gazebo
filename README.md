@@ -1,8 +1,8 @@
 # duatic_gazebo
-[![Jazzy](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/mbloechli/3339b96a06290c449186f7fde2d3cc1a/raw/duatic_gazebo-jazzy.json)](https://github.com/Duatic/duatic_gazebo/actions/workflows/ci.yml)
-[![Kilted](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/mbloechli/3339b96a06290c449186f7fde2d3cc1a/raw/duatic_gazebo-kilted.json)](https://github.com/Duatic/duatic_gazebo/actions/workflows/ci.yml)
-[![Lyrical](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/mbloechli/3339b96a06290c449186f7fde2d3cc1a/raw/duatic_gazebo-lyrical.json)](https://github.com/Duatic/duatic_gazebo/actions/workflows/ci.yml)
-[![Rolling](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/mbloechli/3339b96a06290c449186f7fde2d3cc1a/raw/duatic_gazebo-rolling.json)](https://github.com/Duatic/duatic_gazebo/actions/workflows/ci.yml)
+[![Jazzy](https://github.com/Duatic/duatic_gazebo/raw/badges/jazzy.svg)](https://github.com/Duatic/duatic_gazebo/actions/workflows/ci.yml)
+[![Kilted](https://github.com/Duatic/duatic_gazebo/raw/badges/kilted.svg)](https://github.com/Duatic/duatic_gazebo/actions/workflows/ci.yml)
+[![Lyrical](https://github.com/Duatic/duatic_gazebo/raw/badges/lyrical.svg)](https://github.com/Duatic/duatic_gazebo/actions/workflows/ci.yml)
+[![Rolling](https://github.com/Duatic/duatic_gazebo/raw/badges/rolling.svg)](https://github.com/Duatic/duatic_gazebo/actions/workflows/ci.yml)
 
 ## Overview
 
