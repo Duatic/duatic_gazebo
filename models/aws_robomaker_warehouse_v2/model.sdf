@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<sdf version="1.11">
+  <model name="aws_robomaker_warehouse">
+    <static>true</static>
+
+
+
+    <!-- Shelves -->
+    <include>
+      <uri>aws_robomaker_warehouse_ShelfF_01</uri>
+      <name>shelfF_01_001</name>
+      <pose>-5.795143 -0.956635 0 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>aws_robomaker_warehouse_WallB_01</uri>
+      <name>wallB_01_001</name>
+      <pose>0 0 -6 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>aws_robomaker_warehouse_ShelfE_01</uri>
+      <name>shelfE_01_001</name>
+      <pose>4.73156 0.57943 0 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>aws_robomaker_warehouse_ShelfE_01</uri>
+      <name>shelfE_01_002</name>
+      <pose>4.73156 -4.827049 0 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>aws_robomaker_warehouse_ShelfE_01</uri>
+      <name>shelfE_01_003</name>
+      <pose>4.73156 -8.6651 0 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>aws_robomaker_warehouse_ShelfD_01</uri>
+      <name>shelfD_01_001</name>
+      <pose>4.73156 -1.242668 0 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>aws_robomaker_warehouse_ShelfD_01</uri>
+      <name>shelfD_01_002</name>
+      <pose>4.73156 -3.038551 0 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>aws_robomaker_warehouse_ShelfD_01</uri>
+      <name>shelfD_01_003</name>
+      <pose>4.73156 -6.750542 0 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>aws_robomaker_warehouse_GroundB_01</uri>
+      <name>groundB_01_001</name>
+      <pose>0.0 0.0 -0.090092 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>aws_robomaker_warehouse_Lamp_01</uri>
+      <name>lamp_01_005</name>
+      <pose>0 0 -4 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>aws_robomaker_warehouse_Bucket_01</uri>
+      <name>bucket_01_020</name>
+      <pose>0.433449 9.631706 0 0 0 -1.563161</pose>
+    </include>
+
+    <include>
+      <uri>aws_robomaker_warehouse_Bucket_01</uri>
+      <name>bucket_01_022</name>
+      <pose>0.433449 8.59 0 0 0 -1.563161</pose>
+    </include>
+
+    <include>
+      <uri>aws_robomaker_warehouse_ClutteringC_01</uri>
+      <name>clutteringC_01_032</name>
+      <pose>-1.2196 9.407 -0.015663 0 0 1.563871</pose>
+    </include>
+
+    <include>
+      <uri>aws_robomaker_warehouse_TrashCanC_01</uri>
+      <name>trashcanC_01_002</name>
+      <pose>-1.592441 7.71542 0 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>aws_robomaker_warehouse_PalletJackB_01</uri>
+      <name>palletjackB_01_001</name>
+      <pose>-0.276098 -9.481944 0.023266 0 0 0</pose>
+    </include>
+
+  </model>
+</sdf>
