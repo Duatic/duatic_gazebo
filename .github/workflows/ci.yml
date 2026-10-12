@@ -18,8 +18,10 @@ on:
 
 jobs:
   ci:
+    permissions:
+      contents: write
     uses: Duatic/ci-workflows/.github/workflows/ci_orchestrator.yml@v1
     with:
       ros_distro: ${{ inputs.ros_distro }}
-      badge_gist_id: 3339b96a06290c449186f7fde2d3cc1a
+      badge_branch: true
     secrets: inherit
