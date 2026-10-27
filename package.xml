@@ -28,6 +28,10 @@
   <test_depend>duatic_helpers</test_depend>
   <test_depend>launch_ros</test_depend>
   <test_depend>launch_testing_ament_cmake</test_depend>
+  <test_depend>python3-collada</test_depend>
+  <test_depend>python3-numpy</test_depend>
+  <test_depend>python3-pil</test_depend>
+  <test_depend>python3-trimesh-pip</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
