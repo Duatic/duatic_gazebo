@@ -1,1 +1,3 @@
 trimesh
+# Keep the NumPy 1.x ABI that the apt-built SciPy on Ubuntu Noble is compiled against.
+numpy<2
