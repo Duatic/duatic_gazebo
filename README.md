@@ -140,6 +140,13 @@ the same basename, and are derived from the world geometry, so move a wall in th
 and the map is silently wrong. Maps recorded at a real site are instance data and live in
 `/srv/duatic/maps`.
 
+`scripts/sdf_to_map.py` regenerates a world's map by slicing its visual geometry, which is
+what a simulated LIDAR renders (default height 0.25 m, override with `--height`).
+
+```bash
+python3 scripts/sdf_to_map.py worlds/warehouse.sdf
+```
+
 ## Assets
 
 ### AWS RoboMaker Models
