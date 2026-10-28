@@ -23,19 +23,18 @@
 
 import os
 
-from ament_index_python.packages import get_package_share_directory, get_packages_with_prefixes
+from ament_index_python.packages import get_packages_with_prefixes
 
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
+    ExecuteProcess,
     GroupAction,
-    IncludeLaunchDescription,
     OpaqueFunction,
     AppendEnvironmentVariable,
 )
 from launch.conditions import IfCondition, UnlessCondition
-from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import FindExecutable, LaunchConfiguration
 
 from launch_ros.actions import Node
 
@@ -45,8 +44,6 @@ from duatic_gazebo.utils import join_env_paths
 def launch_setup(context, *args, **kwargs):
     # Packages Directories
     gz_extra_paths = LaunchConfiguration("gz_models_path").perform(context)
-    pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
-    gz_sim_launch = PathJoinSubstitution([pkg_ros_gz_sim, "launch", "gz_sim.launch.py"])
 
     # Expand Gazebo resource path
     gz_pkg_paths = []
@@ -70,23 +67,41 @@ def launch_setup(context, *args, **kwargs):
         prepend=True,
     )
 
+    # Let Gazebo find system plugins such as gz_ros2_control (as ros_gz_sim's gz_sim.launch.py does)
+    gz_plugin_path = AppendEnvironmentVariable(
+        name="GZ_SIM_SYSTEM_PLUGIN_PATH",
+        value=join_env_paths(os.environ.get("LD_LIBRARY_PATH", "")),
+    )
+
     # Launch Gazebo headless or with GUI. The world starts PAUSED (no -r):
     # gravity acting before ros2_control claims the joints lets the arms fall
     # limp and drag the hip over on slow starts. unpause_sim.py resumes
     # physics once the hardware components in wait_hardware are active (or
     # immediately if none are given).
-    gz_args = [LaunchConfiguration("world"), ".sdf", " -v", LaunchConfiguration("log_level")]
+    # Started without a shell (unlike ros_gz_sim's gz_sim.launch.py): a shell does not forward the shutdown signals,
+    # so Gazebo would outlive the launch.
+    gz_cmd = [
+        FindExecutable(name="gz"),
+        "sim",
+        [LaunchConfiguration("world"), ".sdf"],
+        "-v",
+        LaunchConfiguration("log_level"),
+        "--force-version",
+        "8",
+    ]
 
     gazebo = GroupAction(
         [
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([gz_sim_launch]),
-                launch_arguments=[("gz_args", gz_args)],
+            ExecuteProcess(
+                name="gazebo",
+                cmd=gz_cmd,
+                output="screen",
                 condition=UnlessCondition(LaunchConfiguration("headless")),
             ),
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([gz_sim_launch]),
-                launch_arguments=[("gz_args", gz_args + [" -s"])],
+            ExecuteProcess(
+                name="gazebo",
+                cmd=gz_cmd + ["-s"],
+                output="screen",
                 condition=IfCondition(LaunchConfiguration("headless")),
             ),
         ]
@@ -119,7 +134,7 @@ def launch_setup(context, *args, **kwargs):
         ],
     )
 
-    return [gz_resource_path, gazebo, clock_bridge, unpause]
+    return [gz_resource_path, gz_plugin_path, gazebo, clock_bridge, unpause]
 
 
 def generate_launch_description():
