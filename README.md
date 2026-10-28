@@ -133,6 +133,7 @@ ros2 run duatic_gazebo start_sim.py --ros-args -p world:=warehouse -p headless:=
 - **bag_lifting**: Demo booth with a wall, pallet, table, and rice bags, used for pick/place demos
 - **bag_sorting**: Six bags on three tables, can be sorted onto the pallets
 - **bag_sorting_single**: One bag on the middle table, for general application testing
+- **klt_depalletizing**: Closed 10 x 8 m room with 6 KLT boxes in a single layer on the floor around (3, 0), 2 cm apart, and four stations at y = +/-3 with stacked boxes for the known object skills (blocked handle, box on a handle, offset stack, single box)
 
 A world per scenario beats clearing objects at runtime: with the objects already in place,
 a fresh simulation is the reset. Occupancy maps live in `maps/`, one pair per world under
