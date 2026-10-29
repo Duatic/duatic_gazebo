@@ -86,8 +86,6 @@ def launch_setup(context, *args, **kwargs):
         [LaunchConfiguration("world"), ".sdf"],
         "-v",
         LaunchConfiguration("log_level"),
-        "--force-version",
-        "8",
     ]
 
     gazebo = GroupAction(
