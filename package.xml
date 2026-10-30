@@ -5,7 +5,7 @@
   <version>0.0.0</version>
   <description>Sim Interface for Duatic Robots</description>
   <maintainer email="mbloechlinger@duatic.com">Marc Blöchlinger</maintainer>
-  <license>Duatic</license>
+  <license>BSD-3-Clause</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>
@@ -34,5 +34,6 @@
 
   <export>
     <build_type>ament_cmake</build_type>
+    <duatic_archive_root>public</duatic_archive_root>
   </export>
 </package>
