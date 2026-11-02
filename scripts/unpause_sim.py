@@ -58,7 +58,7 @@ class UnpauseSim(Node):
                 f"Waiting for hardware components before unpausing '{world}': {sorted(wanted)}"
             )
             if not self._wait_for_hardware(wanted, timeout, poll_interval):
-                self.get_logger().warn(
+                self.get_logger().warning(
                     f"Hardware components not all active after {timeout:.0f}s — unpausing anyway"
                 )
         return self._unpause(world)
@@ -73,7 +73,7 @@ class UnpauseSim(Node):
         while time.monotonic() < deadline:
             if not client.service_is_ready():
                 if time.monotonic() >= next_notice:
-                    self.get_logger().warn(f"Still waiting for {service}")
+                    self.get_logger().warning(f"Still waiting for {service}")
                     next_notice = time.monotonic() + 5.0
                 client.wait_for_service(timeout_sec=poll_interval)
                 continue
@@ -88,7 +88,7 @@ class UnpauseSim(Node):
                     self.get_logger().info("All required hardware components active")
                     return True
                 if time.monotonic() >= next_notice:
-                    self.get_logger().warn(f"Not active yet: {sorted(missing)}")
+                    self.get_logger().warning(f"Not active yet: {sorted(missing)}")
                     next_notice = time.monotonic() + 5.0
             time.sleep(poll_interval)
         return False
@@ -116,7 +116,7 @@ class UnpauseSim(Node):
             if result.returncode == 0 and "true" in result.stdout.lower():
                 self.get_logger().info(f"Simulation '{world}' unpaused")
                 return 0
-            self.get_logger().warn(
+            self.get_logger().warning(
                 f"Unpause attempt {attempt}/3 failed: {result.stdout.strip()} {result.stderr.strip()}"
             )
             time.sleep(1.0)
