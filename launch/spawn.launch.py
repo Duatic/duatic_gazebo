@@ -21,23 +21,33 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from typing import List
+
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
 
 ARGUMENTS = [
     DeclareLaunchArgument(
         "namespace", default_value="empty_namespace", description="entity namespace"
     ),
-    DeclareLaunchArgument("initial_pose_x", default_value="0.0", description="x position"),
-    DeclareLaunchArgument("initial_pose_y", default_value="0.0", description="y position"),
-    DeclareLaunchArgument("initial_pose_z", default_value="0.0", description="z position"),
-    DeclareLaunchArgument("initial_pose_yaw", default_value="0.0", description="yaw rotation"),
+    DeclareLaunchArgument(
+        "spawn_pose",
+        default_value="[0.0, 0.0, 0.0, 0.0]",
+        description="Spawn pose [x, y, z, yaw] (floats)",
+    ),
 ]
 
 
-def generate_launch_description():
+def launch_setup(context, *args, **kwargs):
+    spawn_pose = ParameterValue(LaunchConfiguration("spawn_pose"), value_type=List[float]).evaluate(
+        context
+    )
+    if len(spawn_pose) != 4:
+        raise ValueError(f"spawn_pose must be [x, y, z, yaw], got {spawn_pose}")
+
     spawn_entity = Node(
         package="ros_gz_sim",
         name="create",
@@ -46,20 +56,23 @@ def generate_launch_description():
             "-name",
             LaunchConfiguration("namespace"),
             "-x",
-            LaunchConfiguration("initial_pose_x"),
+            str(spawn_pose[0]),
             "-y",
-            LaunchConfiguration("initial_pose_y"),
+            str(spawn_pose[1]),
             "-z",
-            LaunchConfiguration("initial_pose_z"),
+            str(spawn_pose[2]),
             "-Y",
-            LaunchConfiguration("initial_pose_yaw"),
+            str(spawn_pose[3]),
             "-topic",
             "robot_description",
         ],
         output="screen",
     )
+    return [spawn_entity]
 
+
+def generate_launch_description():
     # Create launch description and add actions
     ld = LaunchDescription(ARGUMENTS)
-    ld.add_action(spawn_entity)
+    ld.add_action(OpaqueFunction(function=launch_setup))
     return ld

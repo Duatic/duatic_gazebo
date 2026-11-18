@@ -57,11 +57,11 @@ Prerequisite: URDF is being published with the topic /{namespace}/robot_descript
 
 ```bash
 # Basic spawn
-ros2 launch duatic_gazebo spawn.launch.py namespace:=robot1 initial_pose_x:=0 initial_pose_y:=0 initial_pose_z:=1 initial_pose_yaw:=0
+ros2 launch duatic_gazebo spawn.launch.py namespace:=robot1 spawn_pose:="[0.0, 0.0, 1.0, 0.0]"
 
 # Multiple robots
-ros2 launch duatic_gazebo spawn.launch.py namespace:=alpha initial_pose_x:=0 initial_pose_y:=0 initial_pose_z:=1 initial_pose_yaw:=0 &
-ros2 launch duatic_gazebo spawn.launch.py namespace:=beta initial_pose_x:=2 initial_pose_y:=2 initial_pose_z:=1 initial_pose_yaw:=1.57 &
+ros2 launch duatic_gazebo spawn.launch.py namespace:=alpha spawn_pose:="[0.0, 0.0, 1.0, 0.0]" &
+ros2 launch duatic_gazebo spawn.launch.py namespace:=beta spawn_pose:="[2.0, 2.0, 1.0, 1.57]" &
 ```
 
 ### ROS-Gazebo Bridge
@@ -116,8 +116,7 @@ ros2 run duatic_gazebo start_sim.py --ros-args -p world:=warehouse -p headless:=
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `namespace` | `"empty_namespace"` | Robot namespace |
-| `initial_pose_x`, `initial_pose_y`, `initial_pose_z` | `0.0` | Spawn position |
-| `initial_pose_yaw` | `0.0` | Spawn orientation |
+| `spawn_pose` | `[0.0, 0.0, 0.0, 0.0]` | Spawn pose `[x, y, z, yaw]` (all floats) |
 
 ### ros_gz_bridge.launch.py
 | Parameter | Default | Description |
