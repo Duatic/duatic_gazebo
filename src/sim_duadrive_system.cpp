@@ -864,12 +864,14 @@ SimDuaDriveSystem::perform_command_mode_switch(
     joint.claimed = claimed;
     joint.law = duatic_gazebo::select_law(claimed[0], claimed[1], claimed[2]);
     // A target in force under Pd is kept; after Effort or Velocity it is stale and re-seeded.
-    if (previous_law != duatic_gazebo::DriveLaw::Pd && std::isfinite(joint.joint_position)) {
-      joint.joint_position_cmd = joint.joint_position;
+    if (previous_law != duatic_gazebo::DriveLaw::Pd) {
+      if (std::isfinite(joint.joint_position)) {
+        joint.joint_position_cmd = joint.joint_position;
+      }
+      joint.accepted_cmd.position = joint.joint_position_cmd;
     }
     joint.joint_velocity_cmd = 0.0;
     joint.joint_effort_cmd = 0.0;
-    joint.accepted_cmd.position = joint.joint_position_cmd;
     joint.accepted_cmd.velocity = 0.0;
     joint.accepted_cmd.effort = 0.0;
     joint.integral = 0.0;
