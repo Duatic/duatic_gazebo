@@ -146,14 +146,20 @@ def with_link_a_inertia(values, axis="0 0 1"):
         "<inertia " + " ".join(f'{k}="{v}"' for k, v in values.items()) + "/>",
         1,
     )
-    return urdf.replace('<child link="link_a"/><axis xyz="0 0 1"/>', f'<child link="link_a"/><axis xyz="{axis}"/>')
+    return urdf.replace(
+        '<child link="link_a"/><axis xyz="0 0 1"/>', f'<child link="link_a"/><axis xyz="{axis}"/>'
+    )
 
 
 def test_armature_keeps_inertia_valid():
     wrist = {"ixx": 1e-5, "ixy": 0, "ixz": 0, "iyy": 1e-5, "iyz": 0, "izz": 1.5e-5}
     out = inertia(apply_sim_drive(with_link_a_inertia(wrist), CFG), "link_a")
     tensor = np.array(
-        [[out["ixx"], out["ixy"], out["ixz"]], [out["ixy"], out["iyy"], out["iyz"]], [out["ixz"], out["iyz"], out["izz"]]]
+        [
+            [out["ixx"], out["ixy"], out["ixz"]],
+            [out["ixy"], out["iyy"], out["iyz"]],
+            [out["ixz"], out["iyz"], out["izz"]],
+        ]
     )
     small, middle, large = np.linalg.eigvalsh(tensor)
     assert small > 0.0
@@ -229,6 +235,25 @@ def test_missing_or_negative_value_is_rejected(tmp_path):
         load_sim_drive_config(write_config(tmp_path, {"neg_p": {**good, "p_gain": -1.0}}))
     with pytest.raises(ValueError, match="nan_d"):
         load_sim_drive_config(write_config(tmp_path, {"nan_d": {**good, "d_gain": ".nan"}}))
+
+
+def test_infinite_value_is_rejected(tmp_path):
+    good = CFG["joints"]["a"]
+    with pytest.raises(ValueError, match="inf_p.*p_gain"):
+        load_sim_drive_config(write_config(tmp_path, {"inf_p": {**good, "p_gain": ".inf"}}))
+    with pytest.raises(ValueError, match="inf_arm.*armature"):
+        load_sim_drive_config(write_config(tmp_path, {"inf_arm": {**good, "armature": ".inf"}}))
+
+
+def test_zero_length_axis_is_named():
+    with pytest.raises(ValueError, match="'a'"):
+        apply_sim_drive(
+            URDF.replace(
+                '<child link="link_a"/><axis xyz="0 0 1"/>',
+                '<child link="link_a"/><axis xyz="0 0 0"/>',
+            ),
+            CFG,
+        )
 
 
 def test_empty_joints_switches_only_named_plugin():

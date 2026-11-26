@@ -240,14 +240,18 @@ class TestSimDuaDrive(unittest.TestCase):
 
     # Tests run in name order; the 0 keeps this one first, before any test moves a joint.
     def test_0_drive_joints_hold_without_controller(self):
+        self._spin_until(lambda: self.samples, 120.0, "/joint_states")
+        first = self.samples[0][0]
         self._spin_until(
-            lambda: self.samples and self.sim_time is not None and self.sim_time >= 4.0,
+            lambda: self.sim_time is not None and self.sim_time >= first + 4.0,
             120.0,
-            "/joint_states and 4 s of sim time",
+            "4 s of sim time after the first joint state",
         )
-        # Average over the sim-time window [3 s, 4 s].
-        window = [s for s in self.samples if 3.0 <= s[0] <= 4.0]
-        self.assertGreater(len(window), 50, f"Only {len(window)} joint states between 3 s and 4 s")
+        # Average over the sim-time window [3 s, 4 s] after the first joint state.
+        window = [s for s in self.samples if first + 3.0 <= s[0] <= first + 4.0]
+        self.assertGreater(
+            len(window), 50, f"Only {len(window)} joint states 3 s to 4 s after the first"
+        )
         pos = {j: sum(s[1][j] for s in window) / len(window) for j in ("heavy", "light")}
         max_abs_vel = {j: max(abs(s[2][j]) for s in window) for j in ("heavy", "light")}
         print(f"held positions {pos}, max |velocity| {max_abs_vel}")
@@ -326,7 +330,6 @@ class TestSimDuaDrive(unittest.TestCase):
         self.switch(deactivate="heavy_position", activate="heavy_effort")
         self.publish("heavy_effort", [0.0])
         self.settle(1.0)
-        self.settle(0.1)
         # No position command is published after this switch.
         self.switch(deactivate="heavy_effort", activate="heavy_position")
         # The joint swings at about 4 rad/s, so the reference is its newest state when the switch returns.

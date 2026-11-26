@@ -128,8 +128,16 @@ joints:
 ```
 
 `apply_sim_drive` takes a URDF string and a loaded config, switches that element to the plugin, adds the gain
-params to each listed joint and adds the armature to the inertia of the joint's child link: the full value about the joint axis and half of it about the perpendicular axes, so the link inertia stays valid. A link whose inertia is invalid is an error naming the link.
-From this package's source directory:
+params to each listed joint and adds the armature to the inertia of the joint's child link: the full value about
+the joint axis and half of it about the perpendicular axes, so the link inertia stays valid. A link whose inertia
+is invalid is an error naming the link. Because of the perpendicular halves, every joint further up the chain
+sees an extra `armature / 2` per downstream drive link about its own axis, which a per-joint armature in a
+training simulator does not add.
+
+A drive joint needs a positive effort limit in the URDF; without one the plugin fails to start and names the
+joint.
+
+The commands below run inside the dev container. From this package's source directory:
 
 ```bash
 python3 -c "
@@ -140,7 +148,7 @@ print(apply_sim_drive(urdf, load_sim_drive_config('test/config/sim_duadrive_test
 ```
 
 The launch test `test/launch_sim_duadrive.py` spawns a test robot with two drive joints and a wheel and checks
-each law:
+each law. From the workspace root:
 
 ```bash
 colcon test --packages-select duatic_gazebo --ctest-args -R launch_sim_duadrive --event-handlers console_direct+

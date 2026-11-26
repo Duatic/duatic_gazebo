@@ -6,6 +6,7 @@
   <description>Sim Interface for Duatic Robots</description>
   <maintainer email="mbloechlinger@duatic.com">Marc Blöchlinger</maintainer>
   <license>BSD-3-Clause</license>
+  <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>
@@ -25,6 +26,8 @@
   <depend>rqt_gui_cpp</depend>
 
   <exec_depend>controller_manager_msgs</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
   <exec_depend>ros2pkg</exec_depend>
   <exec_depend>ros_gz_bridge</exec_depend>
   <exec_depend>ros_gz_image</exec_depend>
@@ -40,7 +43,6 @@
   <test_depend>launch_ros</test_depend>
   <test_depend>launch_testing_ament_cmake</test_depend>
   <test_depend>python3-collada</test_depend>
-  <test_depend>python3-numpy</test_depend>
   <test_depend>python3-pil</test_depend>
   <test_depend>robot_state_publisher</test_depend>
   <test_depend>rosgraph_msgs</test_depend>

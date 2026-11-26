@@ -17,7 +17,6 @@
   </joint>
 
   <!-- Horizontal axis; the link's centre of mass lies 0.3 m out along x, so gravity loads it at position 0. -->
-  <!-- ixx and izz keep the inertia valid for Gazebo once armature is added to iyy. -->
   <link name="heavy_link">
     <inertial>
       <origin xyz="0.3 0 0" rpy="0 0 0"/>
@@ -35,7 +34,6 @@
   </joint>
 
   <!-- Vertical axis through the centre of mass, so gravity puts no torque on it. -->
-  <!-- ixx and iyy keep the inertia valid for Gazebo once armature is added to izz. -->
   <link name="light_link">
     <inertial>
       <origin xyz="0 0 0" rpy="0 0 0"/>

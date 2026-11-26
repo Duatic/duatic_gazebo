@@ -36,8 +36,10 @@ def _number(joint, key, values):
     value = values.get(key) if isinstance(values, dict) else None
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise ValueError(f"joint '{joint}': '{key}' is missing or not a number")
-    if math.isnan(value) or value < 0.0:
-        raise ValueError(f"joint '{joint}': '{key}' must be a non-negative number, got {value}")
+    if not math.isfinite(value) or value < 0.0:
+        raise ValueError(
+            f"joint '{joint}': '{key}' must be a finite non-negative number, got {value}"
+        )
     return float(value)
 
 
@@ -136,5 +138,8 @@ def apply_sim_drive(urdf_xml: str, config: dict) -> str:
             raise ValueError(f"joint '{name}': child link '{child}' is not in the URDF")
         axis = urdf_joint.find("axis")
         axis_vec = _vector(axis.get("xyz") if axis is not None else None, (1, 0, 0))
-        _add_armature(links[child], axis_vec / np.linalg.norm(axis_vec), values["armature"])
+        norm = np.linalg.norm(axis_vec)
+        if not norm > 0.0:
+            raise ValueError(f"joint '{name}': <axis> has zero length")
+        _add_armature(links[child], axis_vec / norm, values["armature"])
     return ET.tostring(root, encoding="unicode")
