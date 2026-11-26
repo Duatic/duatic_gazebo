@@ -113,8 +113,8 @@ The drive picks its law from the command interfaces that active controllers clai
 
 With nothing claimed the drive holds its last position target, so an idle joint stays where it is. Whenever the
 claimed set of a joint changes, its velocity and effort targets are set to zero and the integral to zero. Its
-position target is set to the measured position if the law before the change was the effort or velocity law, and
-kept if it was the first law. The gains keep their values.
+position target is kept if `position` or nothing was claimed before the change, and set to the measured position if
+only `effort`, or `velocity` without `position`, was claimed. The gains keep their values.
 
 The config file names the `<ros2_control>` element and, per drive joint, the gains and an armature in kg m²:
 
