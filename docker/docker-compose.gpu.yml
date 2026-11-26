@@ -1,0 +1,13 @@
+# Override for docker-compose.yml that passes every NVIDIA GPU into the simulation for rendering.
+# Needs the NVIDIA Container Toolkit on the host.
+services:
+    simulation:
+      environment:
+        - NVIDIA_DRIVER_CAPABILITIES=all
+      deploy:
+        resources:
+          reservations:
+            devices:
+              - driver: nvidia
+                count: all
+                capabilities: [gpu]

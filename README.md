@@ -22,6 +22,9 @@ Images in this repository are to be licensed separately if you want to use them 
 
 The `start_sim` node provides a managed way to start and stop the simulation. It automatically ensures the simulation container is properly shut down when the node terminates.
 
+It runs `docker compose`, so it needs ROS 2 and the Docker CLI on the same machine, such as a host
+with ROS installed. Inside a dev container without Docker, use the launch file below instead.
+
 ```bash
 # Empty world (default)
 ros2 run duatic_gazebo start_sim.py
@@ -91,6 +94,15 @@ ROS 2 node that manages the simulation Docker container lifecycle.
 **Parameters:**
 - `world` (string, default: "empty"): World name to load
 - `headless` (bool, default: false): Run simulation without GUI
+- `gpu` (bool, default: false): Pass the host's NVIDIA GPUs into the container for rendering. Needs
+  the NVIDIA Container Toolkit.
+
+**Environment:**
+- `SIM_IMAGE`: image the container runs, default `ghcr.io/duatic/dynaarm-dev:<ROS_DISTRO>`. Set it
+  to your product's dev image when the robot you spawn has meshes the default image lacks.
+- `ROS_DOMAIN_ID`, `GZ_PARTITION`, `CYCLONEDDS_IFACE` and `CYCLONEDDS_PEER` are passed into the
+  container, so the simulation joins the same ROS domain and Gazebo partition as the caller.
+- The container runs as the calling user, whom the node admits to the X server with `xhost`.
 
 **Features:**
 - Starts simulation container using docker compose

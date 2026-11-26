@@ -22,7 +22,12 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import getpass
 import os
+import shutil
+import subprocess
+import sys
+
 from ament_index_python import get_package_share_directory
 import rclpy
 from rclpy.node import Node
@@ -35,53 +40,87 @@ class SimulationStarter(Node):
         # Declare ROS parameters with default values
         self.declare_parameter("world", "empty")
         self.declare_parameter("headless", False)
+        self.declare_parameter("gpu", False)
 
         # Get parameter values
         self.world = self.get_parameter("world").get_parameter_value().string_value
         self.headless = self.get_parameter("headless").get_parameter_value().bool_value
+        self.gpu = self.get_parameter("gpu").get_parameter_value().bool_value
 
-        # Convert boolean to string for docker compose
-        self.headless_str = "true" if self.headless else "false"
+        compose_dir = os.path.join(get_package_share_directory("duatic_gazebo"), "docker")
+        self.compose_cmd = ["docker", "compose", "-p", f"sim_{self.world}"]
+        self.compose_cmd += ["-f", os.path.join(compose_dir, "docker-compose.yml")]
+        if self.gpu:
+            self.compose_cmd += ["-f", os.path.join(compose_dir, "docker-compose.gpu.yml")]
 
-        self.get_logger().info(f"Starting simulation container for world: {self.world}")
-        self.get_logger().info(f"Headless mode: {self.headless_str}")
-
-        # Compose the Docker start command
-        self.start_cmd = (
-            f"WORLD={self.world} HEADLESS={self.headless_str} docker compose "
-            f"-p sim_{self.world} "
-            "-f " + get_package_share_directory("duatic_gazebo") + "/docker/docker-compose.yml "
-            "up simulation --detach --wait"
+        self.env = dict(
+            os.environ,
+            WORLD=self.world,
+            HEADLESS="true" if self.headless else "false",
+            HOST_UID=str(os.getuid()),
+            HOST_GID=str(os.getgid()),
+            HOST_USER=getpass.getuser(),
         )
+        self.started = False
 
-        self.get_logger().info(f"Executing: {self.start_cmd}")
-        os.system(self.start_cmd)
+    def start_simulation(self) -> bool:
+        """Start the docker container for this simulation. Returns False if it did not start."""
+        if shutil.which("docker") is None:
+            self.get_logger().error(
+                "No docker CLI here. Run start_sim.py on a host with Docker, or launch "
+                "duatic_gazebo gazebo.launch.py directly."
+            )
+            return False
+        if not self.headless:
+            if not os.environ.get("DISPLAY"):
+                self.get_logger().error("DISPLAY is not set. Set it, or pass headless:=true.")
+                return False
+            # Admit the host user, whom the container runs as, to the X server.
+            if shutil.which("xhost"):
+                subprocess.run(
+                    ["xhost", f"+SI:localuser:{getpass.getuser()}"],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+
+        self.get_logger().info(
+            f"Starting simulation container for world '{self.world}' "
+            f"(headless: {self.headless}, gpu: {self.gpu})"
+        )
+        cmd = self.compose_cmd + ["up", "simulation", "--detach", "--wait"]
+        self.started = True
+        if subprocess.run(cmd, env=self.env).returncode != 0:
+            self.get_logger().error(f"Simulation container did not start: {' '.join(cmd)}")
+            return False
+        return True
 
     def stop_simulation(self):
         """Stop the docker container for this simulation."""
-        stop_cmd = (
-            f"WORLD={self.world} docker compose "
-            f"-p sim_{self.world} "
-            "-f " + get_package_share_directory("duatic_gazebo") + "/docker/docker-compose.yml "
-            "down --timeout 0"
-        )
-        self.get_logger().info(f"Stopping simulation container: {stop_cmd}")
-        os.system(stop_cmd)
+        if not self.started:
+            return
+        cmd = self.compose_cmd + ["down", "--timeout", "0"]
+        self.get_logger().info(f"Stopping simulation container: {' '.join(cmd)}")
+        subprocess.run(cmd, env=self.env)
 
 
 def main(args=None):
     rclpy.init(args=args)
     node = SimulationStarter()
+    exit_code = 0
 
     try:
-        rclpy.spin(node)
+        if node.start_simulation():
+            rclpy.spin(node)
+        else:
+            exit_code = 1
     except KeyboardInterrupt:
         pass
     finally:
         # Stop the simulation container on shutdown
         node.stop_simulation()
         node.destroy_node()
-        rclpy.shutdown()
+        rclpy.try_shutdown()
+    sys.exit(exit_code)
 
 
 if __name__ == "__main__":

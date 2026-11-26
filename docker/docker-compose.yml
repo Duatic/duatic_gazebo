@@ -1,10 +1,19 @@
 services:
     simulation:
-      command: bash -c "ros2 launch duatic_gazebo gazebo.launch.py world:=$${WORLD} headless:=$${HEADLESS:-false}"
-      image: ghcr.io/duatic/dev-workspace/dynaarm-jazzy
+      # A login shell, so /etc/profile.d sources ROS and the image's workspace.
+      command: bash -lc "ros2 launch duatic_gazebo gazebo.launch.py world:=$${WORLD} headless:=$${HEADLESS:-false}"
+      # Override with the product's dev image when its robot meshes are not in this one.
+      image: ${SIM_IMAGE:-ghcr.io/duatic/dynaarm-dev:${ROS_DISTRO:-jazzy}}
       environment:
-        - DISPLAY=${DISPLAY}
+        - DISPLAY=${DISPLAY:-}
         - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+        - GZ_PARTITION
+        - CYCLONEDDS_IFACE
+        - CYCLONEDDS_PEER
+        # Run as the host user, whom the X server admits.
+        - HOST_UID
+        - HOST_GID
+        - HOST_USER
         - WORLD
         - HEADLESS
       network_mode: host
