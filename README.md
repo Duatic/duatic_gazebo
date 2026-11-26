@@ -92,6 +92,60 @@ next one after Gazebo is closed and started again. Closing the panel or rqt puts
 The plugin moves the existing window instead of copying its image, so it needs an X11 session and a simulation
 started with a GUI (not `headless:=true`). It embeds one Gazebo window at a time.
 
+### Simulated DuaDrive
+
+`duatic_gazebo/SimDuaDriveSystem` is a `gz_ros2_control` hardware plugin that simulates DuaDrive joints. It
+replaces `gz_ros2_control/GazeboSimSystem` in one `<ros2_control>` element. A joint of that element is a
+simulated drive if it carries the params `sim_p_gain`, `sim_i_gain` and `sim_d_gain`; every other joint behaves
+as with the stock plugin.
+
+A drive joint offers the command interfaces `position`, `velocity`, `effort`, `p_gain`, `i_gain` and `d_gain`,
+and the state interfaces `position`, `velocity` and `effort`. The params give the gains the drive starts with.
+A NaN target, or a NaN or negative gain, written by a controller is ignored and the previous value kept.
+
+The drive picks its law from the command interfaces that active controllers claim on the joint:
+
+| Claimed | Law, applied on every physics step |
+|---------|------------------------------------|
+| `position` (with or without `velocity`, `effort`), or nothing | `tau = p_gain * (position - q) + d_gain * (velocity - qd) + i_gain * integral(position - q) + effort`, clamped to the URDF effort limit |
+| `effort` only | the commanded effort, clamped to the URDF effort limit |
+| `velocity`, without `position` | Gazebo's joint velocity command, as with the stock plugin |
+
+With nothing claimed the drive holds its last position target, so an idle joint stays where it is. Whenever the
+claimed set of a joint changes, its position target is set to the measured position, its velocity and effort
+targets to zero and the integral to zero. The gains keep their values.
+
+The config file names the `<ros2_control>` element and, per drive joint, the gains and an armature in kg m²:
+
+```yaml
+hardware: TestSystem
+joints:
+  heavy:
+    p_gain: 300.0
+    i_gain: 0.0
+    d_gain: 25.0
+    armature: 0.06
+```
+
+`apply_sim_drive` takes a URDF string and a loaded config, switches that element to the plugin, adds the gain
+params to each listed joint and adds the armature to the inertia of the joint's child link about the joint axis.
+From this package's source directory:
+
+```bash
+python3 -c "
+from duatic_gazebo.sim_drive import apply_sim_drive, load_sim_drive_config
+urdf = open('test/urdf/sim_duadrive_test.urdf').read()
+print(apply_sim_drive(urdf, load_sim_drive_config('test/config/sim_duadrive_test.yaml')))
+"
+```
+
+The launch test `test/launch_sim_duadrive.py` spawns a test robot with two drive joints and a wheel and checks
+each law:
+
+```bash
+colcon test --packages-select duatic_gazebo --ctest-args -R launch_sim_duadrive --event-handlers console_direct+
+```
+
 ## Launch Files
 
 | File | Description |

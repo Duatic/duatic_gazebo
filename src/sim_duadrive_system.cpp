@@ -121,6 +121,12 @@ struct jointData
 
   /// \brief Integral of the position error of a drive joint.
   double integral = 0.0;
+
+  /// \brief Claimed command interfaces of a drive joint as position, velocity, effort flags.
+  std::array<bool, 3> claimed{};
+
+  /// \brief Law a drive joint applies, chosen from its claimed command interfaces.
+  duatic_gazebo::DriveLaw law = duatic_gazebo::DriveLaw::Pd;
 };
 
 class ForceTorqueData
@@ -844,6 +850,30 @@ SimDuaDriveSystem::perform_command_mode_switch(
     }
   }
 
+  for (auto & joint : this->dataPtr->joints_) {
+    if (!joint.is_drive) {
+      continue;
+    }
+    const std::array<bool, 3> claimed{static_cast<bool>(joint.joint_control_method & POSITION),
+      static_cast<bool>(joint.joint_control_method & VELOCITY),
+      static_cast<bool>(joint.joint_control_method & EFFORT)};
+    if (claimed == joint.claimed) {
+      continue;
+    }
+    joint.claimed = claimed;
+    joint.law = duatic_gazebo::select_law(claimed[0], claimed[1], claimed[2]);
+    // A new claim starts from the measured position, so a stale target never yanks the joint.
+    if (std::isfinite(joint.joint_position)) {
+      joint.joint_position_cmd = joint.joint_position;
+    }
+    joint.joint_velocity_cmd = 0.0;
+    joint.joint_effort_cmd = 0.0;
+    joint.accepted_cmd.position = joint.joint_position_cmd;
+    joint.accepted_cmd.velocity = 0.0;
+    joint.accepted_cmd.effort = 0.0;
+    joint.integral = 0.0;
+  }
+
   return hardware_interface::return_type::OK;
 }
 
@@ -891,7 +921,25 @@ hardware_interface::return_type SimDuaDriveSystem::write(
           joint.name.c_str());
       }
 
-      const double torque = duatic_gazebo::pd_torque(
+      if (joint.law == duatic_gazebo::DriveLaw::Velocity) {
+        // Gazebo ignores a joint's velocity command while it has a force command.
+        if (this->dataPtr->ecm->Component<sim::components::JointForceCmd>(joint.sim_joint)) {
+          this->dataPtr->ecm->RemoveComponent<sim::components::JointForceCmd>(joint.sim_joint);
+        }
+        auto * vel = this->dataPtr->ecm->Component<sim::components::JointVelocityCmd>(
+          joint.sim_joint);
+        if (vel == nullptr) {
+          this->dataPtr->ecm->CreateComponent(
+            joint.sim_joint, sim::components::JointVelocityCmd({joint.accepted_cmd.velocity}));
+        } else if (!vel->Data().empty()) {
+          vel->Data()[0] = joint.accepted_cmd.velocity;
+        }
+        continue;
+      }
+
+      const double torque = joint.law == duatic_gazebo::DriveLaw::Effort ?
+        std::clamp(joint.accepted_cmd.effort, -joint.effort_limit, joint.effort_limit) :
+        duatic_gazebo::pd_torque(
         joint.accepted_cmd, {position->Data()[0], velocity->Data()[0]}, dt, joint.effort_limit,
         joint.integral);
       auto * force = this->dataPtr->ecm->Component<sim::components::JointForceCmd>(

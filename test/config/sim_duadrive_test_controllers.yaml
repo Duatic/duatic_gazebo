@@ -5,3 +5,43 @@ controller_manager:
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
+
+    heavy_pd:
+      type: forward_command_controller/MultiInterfaceForwardCommandController
+
+    heavy_position:
+      type: forward_command_controller/ForwardCommandController
+
+    heavy_effort:
+      type: forward_command_controller/ForwardCommandController
+
+    wheel_velocity:
+      type: forward_command_controller/ForwardCommandController
+
+    light_velocity:
+      type: forward_command_controller/ForwardCommandController
+
+heavy_pd:
+  ros__parameters:
+    joint: heavy
+    interface_names: [position, velocity, effort, p_gain, i_gain, d_gain]
+
+heavy_position:
+  ros__parameters:
+    joints: [heavy]
+    interface_name: position
+
+heavy_effort:
+  ros__parameters:
+    joints: [heavy]
+    interface_name: effort
+
+wheel_velocity:
+  ros__parameters:
+    joints: [wheel]
+    interface_name: velocity
+
+light_velocity:
+  ros__parameters:
+    joints: [light]
+    interface_name: velocity

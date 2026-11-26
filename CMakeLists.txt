@@ -116,7 +116,7 @@ if(BUILD_TESTING)
   endfunction()
   add_ros_isolated_launch_test(test/launch_gazebo_warehouse.py)
   add_ros_isolated_launch_test(test/launch_sim_scene_weld.py)
-  add_ros_isolated_launch_test(test/launch_sim_duadrive.py TIMEOUT 240)
+  add_ros_isolated_launch_test(test/launch_sim_duadrive.py TIMEOUT 300)
 
   find_package(ament_cmake_gtest REQUIRED)
   ament_add_gtest(test_sim_duadrive_law test/test_sim_duadrive_law.cpp)
