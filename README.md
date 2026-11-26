@@ -112,8 +112,9 @@ The drive picks its law from the command interfaces that active controllers clai
 | `velocity`, without `position` | Gazebo's joint velocity command, as with the stock plugin |
 
 With nothing claimed the drive holds its last position target, so an idle joint stays where it is. Whenever the
-claimed set of a joint changes, its position target is set to the measured position, its velocity and effort
-targets to zero and the integral to zero. The gains keep their values.
+claimed set of a joint changes, its velocity and effort targets are set to zero and the integral to zero. Its
+position target is set to the measured position if the law before the change was the effort or velocity law, and
+kept if it was the first law. The gains keep their values.
 
 The config file names the `<ros2_control>` element and, per drive joint, the gains and an armature in kg m²:
 

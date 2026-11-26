@@ -339,6 +339,22 @@ class TestSimDuaDrive(unittest.TestCase):
         self.assertLess(abs(after - before), 0.1)
         self.deactivate("heavy_position")
 
+    def test_position_target_survives_controller_switches(self):
+        self.start_from_hold()
+        self.activate("heavy_position")
+        self.publish("heavy_position", [0.6])
+        before = self.settle(3.0).pos["heavy"]
+        for _ in range(2):
+            self.deactivate("heavy_position")
+            self.settle(1.0)
+            # No position command is published after this activation.
+            self.activate("heavy_position")
+            self.settle(1.0)
+        after = self.settle(1.0).pos["heavy"]
+        print(f"target across switches: before {before}, after {after}")
+        self.assertLess(abs(after - before), 0.003)
+        self.deactivate("heavy_position")
+
     def test_bad_gain_keeps_previous(self):
         self.start_from_hold()
         self.activate("heavy_pd")
