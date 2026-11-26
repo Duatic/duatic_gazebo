@@ -25,6 +25,13 @@ target_link_libraries(sim_scene_node
 
 install(TARGETS sim_scene_node DESTINATION lib/${PROJECT_NAME})
 
+# Simulated DuaDrive control law, linked into the hardware plugin.
+add_library(sim_duadrive_law STATIC src/sim_duadrive_law.cpp)
+set_target_properties(sim_duadrive_law PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_include_directories(sim_duadrive_law PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+
 # rqt plugin that embeds the Gazebo GUI window.
 # rqt links Qt5 up to Kilted and Qt6 after, and leaves finding it to its users.
 find_package(QT NAMES Qt5 Qt6 REQUIRED COMPONENTS Widgets)
@@ -83,6 +90,10 @@ if(BUILD_TESTING)
   endfunction()
   add_ros_isolated_launch_test(test/launch_gazebo_warehouse.py)
   add_ros_isolated_launch_test(test/launch_sim_scene_weld.py)
+
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(test_sim_duadrive_law test/test_sim_duadrive_law.cpp)
+  target_link_libraries(test_sim_duadrive_law sim_duadrive_law)
 
   find_package(ament_cmake_pytest REQUIRED)
   ament_add_pytest_test(test_gz_resource_path test/test_gz_resource_path.py
