@@ -59,6 +59,32 @@ endif()
 install(TARGETS rqt_gazebo_view LIBRARY DESTINATION lib)
 pluginlib_export_plugin_description_file(rqt_gui plugin.xml)
 
+# Simulated DuaDrive hardware plugin for gz_ros2_control.
+find_package(gz_ros2_control REQUIRED)
+find_package(hardware_interface REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
+find_package(gz_sim_vendor REQUIRED)
+find_package(gz-sim REQUIRED)
+
+add_library(sim_duadrive_system SHARED src/sim_duadrive_system.cpp)
+# gz_ros2_control headers only; none of its libraries is linked.
+target_include_directories(sim_duadrive_system PRIVATE
+  $<TARGET_PROPERTY:gz_ros2_control::gz_ros2_control-system,INTERFACE_INCLUDE_DIRECTORIES>
+)
+target_link_libraries(sim_duadrive_system
+  sim_duadrive_law
+  gz-sim::gz-sim
+  gz-transport::core
+  gz-msgs::core
+  hardware_interface::hardware_interface
+  pluginlib::pluginlib
+  rclcpp::rclcpp
+  rclcpp_lifecycle::rclcpp_lifecycle
+)
+
+install(TARGETS sim_duadrive_system LIBRARY DESTINATION lib)
+pluginlib_export_plugin_description_file(gz_ros2_control sim_duadrive_plugin.xml)
+
 # Install the python module "duatic_gazebo"
 ament_python_install_package(${PROJECT_NAME})
 
@@ -90,6 +116,7 @@ if(BUILD_TESTING)
   endfunction()
   add_ros_isolated_launch_test(test/launch_gazebo_warehouse.py)
   add_ros_isolated_launch_test(test/launch_sim_scene_weld.py)
+  add_ros_isolated_launch_test(test/launch_sim_duadrive.py TIMEOUT 240)
 
   find_package(ament_cmake_gtest REQUIRED)
   ament_add_gtest(test_sim_duadrive_law test/test_sim_duadrive_law.cpp)

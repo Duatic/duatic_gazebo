@@ -1,0 +1,12 @@
+hardware: TestSystem
+joints:
+  heavy:
+    p_gain: 300.0
+    i_gain: 0.0
+    d_gain: 25.0
+    armature: 0.06
+  light:
+    p_gain: 60.0
+    i_gain: 0.0
+    d_gain: 3.0
+    armature: 0.02

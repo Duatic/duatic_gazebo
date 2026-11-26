@@ -1,0 +1,11 @@
+<library path="sim_duadrive_system">
+  <class
+    name="duatic_gazebo/SimDuaDriveSystem"
+    type="duatic_gazebo::SimDuaDriveSystem"
+    base_class_type="gz_ros2_control::GazeboSimSystemInterface">
+    <description>
+      gz_ros2_control hardware component that simulates DuaDrive joints: position, velocity, effort and gain
+      command interfaces, with the PD loop closed on every physics step.
+    </description>
+  </class>
+</library>
