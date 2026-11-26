@@ -13,8 +13,12 @@
   <depend>duatic_helper_msgs</depend>
   <depend>gz_msgs_vendor</depend>
   <depend>gz_transport_vendor</depend>
+  <depend condition="$ROS_DISTRO == jazzy or $ROS_DISTRO == kilted">libqt5x11extras5-dev</depend>
+  <depend>libx11-xcb-dev</depend>
+  <depend>pluginlib</depend>
   <depend>rclcpp</depend>
   <depend>rclpy</depend>
+  <depend>rqt_gui_cpp</depend>
 
   <exec_depend>controller_manager_msgs</exec_depend>
   <exec_depend>gz_ros2_control</exec_depend>
@@ -22,6 +26,7 @@
   <exec_depend>ros_gz_bridge</exec_depend>
   <exec_depend>ros_gz_image</exec_depend>
   <exec_depend>ros_gz_sim</exec_depend>
+  <exec_depend>rqt_gui</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

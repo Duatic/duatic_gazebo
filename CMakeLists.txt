@@ -25,6 +25,33 @@ target_link_libraries(sim_scene_node
 
 install(TARGETS sim_scene_node DESTINATION lib/${PROJECT_NAME})
 
+# rqt plugin that embeds the Gazebo GUI window.
+# rqt links Qt5 up to Kilted and Qt6 after, and leaves finding it to its users.
+find_package(QT NAMES Qt5 Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+if(QT_VERSION_MAJOR EQUAL 5)
+  # Qt6 has the X11 connection accessor in QtGui.
+  find_package(Qt5 REQUIRED COMPONENTS X11Extras)
+endif()
+find_package(pluginlib REQUIRED)
+find_package(rqt_gui_cpp REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(XCB REQUIRED IMPORTED_TARGET xcb)
+
+add_library(rqt_gazebo_view SHARED src/rqt_gazebo_view.cpp)
+set_target_properties(rqt_gazebo_view PROPERTIES AUTOMOC ON)
+target_link_libraries(rqt_gazebo_view
+  pluginlib::pluginlib
+  rqt_gui_cpp::rqt_gui_cpp
+  PkgConfig::XCB
+)
+if(QT_VERSION_MAJOR EQUAL 5)
+  target_link_libraries(rqt_gazebo_view Qt5::X11Extras)
+endif()
+
+install(TARGETS rqt_gazebo_view LIBRARY DESTINATION lib)
+pluginlib_export_plugin_description_file(rqt_gui plugin.xml)
+
 # Install the python module "duatic_gazebo"
 ament_python_install_package(${PROJECT_NAME})
 
