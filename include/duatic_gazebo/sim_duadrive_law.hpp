@@ -32,6 +32,7 @@ DriveLaw select_law(bool position, bool velocity, bool effort);
 // Replaces non-finite targets and non-finite or negative gains in `incoming` by the value in `previous`.
 DriveCommand sanitize(const DriveCommand & incoming, const DriveCommand & previous);
 
+// Returns 0 and leaves `integral` unchanged for a non-finite state, position target or limit.
 // PID torque clamped to +-effort_limit; `integral` only advances for dt > 0 and is bounded so |i_gain * integral| <= effort_limit.
 double pd_torque(
   const DriveCommand & cmd, const DriveState & state, double dt, double effort_limit,

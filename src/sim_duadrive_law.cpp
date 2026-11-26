@@ -29,6 +29,10 @@ double pd_torque(
   double & integral)
 {
   const double error = cmd.position - state.position;
+  // A diverged state or limit must not reach the output or poison the integral.
+  if (!std::isfinite(error) || !std::isfinite(state.velocity) || !std::isfinite(effort_limit)) {
+    return 0.0;
+  }
   if (cmd.i_gain > 0.0) {
     if (dt > 0.0) integral += error * dt;
     const double bound = effort_limit / cmd.i_gain;

@@ -65,3 +65,17 @@ TEST(Sanitize, KeepsPreviousForBadValues)
   EXPECT_DOUBLE_EQ(out.i_gain, 0.0);
   EXPECT_DOUBLE_EQ(out.d_gain, 5.0);
 }
+
+TEST(PdTorque, NonFiniteInputsGiveZeroAndKeepIntegral)
+{
+  const double nan = std::numeric_limits<double>::quiet_NaN();
+  double integral = 0.5;
+  const DriveCommand cmd{1.0, 0.0, 0.0, 100.0, 10.0, 0.0};
+  EXPECT_DOUBLE_EQ(pd_torque(cmd, {nan, 0.0}, 0.002, 40.0, integral), 0.0);
+  EXPECT_DOUBLE_EQ(pd_torque(cmd, {0.0, nan}, 0.002, 40.0, integral), 0.0);
+  EXPECT_DOUBLE_EQ(pd_torque(cmd, {0.0, 0.0}, 0.002, nan, integral), 0.0);
+  EXPECT_DOUBLE_EQ(integral, 0.5);
+  // The integral stays usable once the state recovers.
+  EXPECT_TRUE(std::isfinite(pd_torque(cmd, {0.0, 0.0}, 0.002, 40.0, integral)));
+  EXPECT_TRUE(std::isfinite(integral));
+}
