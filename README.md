@@ -128,7 +128,7 @@ joints:
 ```
 
 `apply_sim_drive` takes a URDF string and a loaded config, switches that element to the plugin, adds the gain
-params to each listed joint and adds the armature to the inertia of the joint's child link about the joint axis.
+params to each listed joint and adds the armature to the inertia of the joint's child link: the full value about the joint axis and half of it about the perpendicular axes, so the link inertia stays valid. A link whose inertia is invalid is an error naming the link.
 From this package's source directory:
 
 ```bash

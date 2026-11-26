@@ -95,9 +95,16 @@ def _add_armature(link, axis_in_link, armature):
         "iyz": (1, 2),
         "izz": (2, 2),
     }
-    delta = armature * np.outer(n, n)
+    # Thin disc: full armature about the axis, half about each perpendicular axis, valid for any link.
+    delta = armature * np.outer(n, n) + 0.5 * armature * (np.eye(3) - np.outer(n, n))
+    tensor = np.zeros((3, 3))
     for key, (i, j) in names.items():
-        inertia.set(key, repr(float(inertia.get(key, "0")) + float(delta[i, j])))
+        value = float(inertia.get(key, "0")) + float(delta[i, j])
+        inertia.set(key, repr(value))
+        tensor[i, j] = tensor[j, i] = value
+    small, middle, large = np.linalg.eigvalsh(tensor)
+    if small <= 0.0 or small + middle < large * (1.0 - 1e-9):
+        raise ValueError(f"link '{link.get('name')}' has an invalid inertia after adding armature")
 
 
 def apply_sim_drive(urdf_xml: str, config: dict) -> str:

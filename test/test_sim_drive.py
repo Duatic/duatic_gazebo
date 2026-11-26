@@ -23,6 +23,7 @@
 
 import xml.etree.ElementTree as ET
 
+import numpy as np
 import pytest
 
 from duatic_gazebo.sim_drive import apply_sim_drive, load_sim_drive_config
@@ -127,15 +128,43 @@ def test_gain_params_added_only_to_listed_joints():
 def test_armature_added_about_joint_axis():
     out = inertia(apply_sim_drive(URDF, CFG), "link_a")
     assert out["izz"] == pytest.approx(0.021)
-    assert out["ixx"] == pytest.approx(inertia(URDF, "link_a")["ixx"])
+    assert out["ixx"] == pytest.approx(0.011)
+    assert out["iyy"] == pytest.approx(0.011)
 
 
 def test_armature_respects_inertial_rotation():
     # The joint axis z in the link frame is the inertial frame's y axis after rpy (pi/2, 0, 0).
     out = inertia(apply_sim_drive(URDF, CFG), "link_b")
     assert out["iyy"] == pytest.approx(0.062)
-    assert out["izz"] == pytest.approx(0.003)
-    assert out["ixx"] == pytest.approx(0.001)
+    assert out["ixx"] == pytest.approx(0.001 + 0.03)
+    assert out["izz"] == pytest.approx(0.003 + 0.03)
+
+
+def with_link_a_inertia(values, axis="0 0 1"):
+    urdf = URDF.replace(
+        '<inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>',
+        "<inertia " + " ".join(f'{k}="{v}"' for k, v in values.items()) + "/>",
+        1,
+    )
+    return urdf.replace('<child link="link_a"/><axis xyz="0 0 1"/>', f'<child link="link_a"/><axis xyz="{axis}"/>')
+
+
+def test_armature_keeps_inertia_valid():
+    wrist = {"ixx": 1e-5, "ixy": 0, "ixz": 0, "iyy": 1e-5, "iyz": 0, "izz": 1.5e-5}
+    out = inertia(apply_sim_drive(with_link_a_inertia(wrist), CFG), "link_a")
+    tensor = np.array(
+        [[out["ixx"], out["ixy"], out["ixz"]], [out["ixy"], out["iyy"], out["iyz"]], [out["ixz"], out["iyz"], out["izz"]]]
+    )
+    small, middle, large = np.linalg.eigvalsh(tensor)
+    assert small > 0.0
+    assert small + middle >= large
+
+
+def test_invalid_result_names_the_link():
+    bad = {"ixx": 1e-3, "ixy": 0, "ixz": 0, "iyy": 1e-3, "iyz": 0, "izz": 1.0}
+    cfg = {"hardware": "TestSystem", "joints": {"a": {**CFG["joints"]["a"], "armature": 0.01}}}
+    with pytest.raises(ValueError, match="link_a"):
+        apply_sim_drive(with_link_a_inertia(bad, axis="1 0 0"), cfg)
 
 
 def test_unlisted_link_inertia_is_unchanged():
