@@ -55,6 +55,7 @@ if(BUILD_TESTING)
     add_launch_test("${path}" RUNNER "${RUNNER}" ${ARGN})
   endfunction()
   add_ros_isolated_launch_test(test/launch_gazebo_warehouse.py)
+  add_ros_isolated_launch_test(test/launch_sim_scene_weld.py)
 
   find_package(ament_cmake_pytest REQUIRED)
   ament_add_pytest_test(test_gz_resource_path test/test_gz_resource_path.py
