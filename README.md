@@ -77,6 +77,21 @@ ros2 launch duatic_gazebo ros_gz_bridge.launch.py \
   config_file:=/path/to/bridge_config.yaml
 ```
 
+### Gazebo Inside rqt
+
+The `Gazebo` rqt plugin shows the Gazebo GUI window inside an rqt panel. Open it from
+`Plugins > Visualization > Gazebo`, or on its own:
+
+```bash
+rqt --standalone duatic_gazebo/GazeboView
+```
+
+rqt and Gazebo can be started in either order. The panel waits until a Gazebo window exists, and picks up the
+next one after Gazebo is closed and started again. Closing the panel or rqt puts the window back on the desktop.
+
+The plugin moves the existing window instead of copying its image, so it needs an X11 session and a simulation
+started with a GUI (not `headless:=true`). It embeds one Gazebo window at a time.
+
 ## Launch Files
 
 | File | Description |

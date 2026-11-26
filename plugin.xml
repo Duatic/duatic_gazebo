@@ -1,0 +1,17 @@
+<library path="rqt_gazebo_view">
+  <class name="duatic_gazebo/GazeboView" type="duatic_gazebo::RqtGazeboView" base_class_type="rqt_gui_cpp::Plugin">
+    <description>
+      Shows the Gazebo GUI window inside an rqt panel.
+    </description>
+    <qtgui>
+      <group>
+        <label>Visualization</label>
+        <icon type="theme">folder</icon>
+        <statustip>Plugins related to visualization.</statustip>
+      </group>
+      <label>Gazebo</label>
+      <icon type="theme">applications-science</icon>
+      <statustip>Shows the Gazebo GUI window inside an rqt panel.</statustip>
+    </qtgui>
+  </class>
+</library>
